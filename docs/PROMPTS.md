@@ -1050,3 +1050,12 @@ continue com as implementacoes que estavam sendo feitas anteriormente
 a dashboard esta muito bem feita agora devera ser feita a implementação de envio de documentos mas antes disso iremos subir o projeto para o github&#x20;
 assim ficara mais facil controlar e vercionar as proximas versões 
 ```
+
+## Prompt 006 — Upload, edição e banco de dados
+
+```text
+execute entao&#x20;
+apos isso veja como podera ser feita o envio de arquivos&#x20;
+a parte de edicao dos mesmos&#x20;
+e sobre o link com o banco de dados 
+```

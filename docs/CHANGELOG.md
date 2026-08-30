@@ -12,6 +12,7 @@
 - Banco mockado persistente, repositório e serviço de documentos.
 - Processamento simulado determinístico com sucesso, revisão e falha.
 - Layout responsivo, navegação e Dashboard conectado ao serviço.
+- Upload múltiplo com validação, drag and drop e processamento simulado.
 - Documentação de arquitetura, decisões, API e uso de IA.
 
 ### Decidido

@@ -42,6 +42,43 @@ de composição da aplicação. As páginas continuarão consumindo o mesmo cont
 serviço. Upload binário e processamento assíncrono real poderão exigir pequenos
 ajustes no contrato, mas não uma reescrita da interface.
 
+## Evolução para edição e persistência reais
+
+### Envio de arquivos
+
+No mock, `DocumentService.upload()` recebe objetos `File`, cria registros locais e
+mantém uma `blob URL` temporária para imagens. Em produção, o mesmo caso de uso
+deverá enviar `multipart/form-data` para `POST /documents`. O backend armazenará o
+binário em um bucket privado e salvará no banco apenas metadados, estado e a chave
+do objeto. A interface não receberá uma URL pública permanente; solicitará uma URL
+assinada e curta quando precisar do preview.
+
+### Edição
+
+A tela de detalhes carregará o documento por `getById()`, manterá uma cópia dos
+campos em estado local e enviará apenas as alterações por `update()`. O serviço
+comparará valores anteriores e novos para aplicar `manuallyEdited: true`. Em uma
+API real, `PATCH /documents/:id` deverá receber também uma versão ou `updatedAt`
+para detectar revisão concorrente.
+
+### Banco de dados
+
+O componente não será conectado diretamente ao banco. Uma implementação
+`ApiDocumentRepository` ou `SupabaseDocumentRepository` substituirá o mock no
+ponto de composição:
+
+```text
+DocumentService
+  -> DocumentRepository
+      -> MockDocumentRepository       (desenvolvimento atual)
+      -> ApiDocumentRepository        (API REST futura)
+      -> SupabaseDocumentRepository   (alternativa futura)
+```
+
+Uma estrutura relacional mínima teria `documents`, `extracted_fields` e,
+posteriormente, `document_events` para auditoria. Arquivos ficariam em storage
+privado, nunca dentro das tabelas nem no `localStorage`.
+
 ## Limitações reconhecidas
 
 O mock não resolve segurança de dados pessoais, armazenamento binário, filas
