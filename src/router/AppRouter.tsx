@@ -3,6 +3,8 @@ import { AppLayout } from '../components/layout/AppLayout'
 import { DashboardPage } from '../pages/Dashboard/DashboardPage'
 import { ComingSoonPage } from '../pages/ComingSoon/ComingSoonPage'
 import { UploadPage } from '../pages/Upload/UploadPage'
+import { ReviewQueuePage } from '../pages/ReviewQueue/ReviewQueuePage'
+import { DocumentDetailsPage } from '../pages/DocumentDetails/DocumentDetailsPage'
 
 export function AppRouter() {
   return (
@@ -11,8 +13,9 @@ export function AppRouter() {
         <Route element={<AppLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="upload" element={<UploadPage />} />
-          <Route path="review" element={<ComingSoonPage title="Conferência" description="A fila de documentos com baixa confiança será implementada em seguida." />} />
+          <Route path="review" element={<ReviewQueuePage />} />
           <Route path="documents" element={<ComingSoonPage title="Documentos" description="A busca e a listagem completa serão conectadas ao serviço mockado." />} />
+          <Route path="documents/:id" element={<DocumentDetailsPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

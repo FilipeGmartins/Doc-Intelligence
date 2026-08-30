@@ -62,7 +62,7 @@ export class DocumentService implements DocumentServiceContract {
       extractedFields: [],
       createdAt: now,
       updatedAt: now,
-      previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+      previewUrl: typeof URL.createObjectURL === 'function' ? URL.createObjectURL(file) : undefined,
     }))
 
     return this.repository.createMany(documents)
