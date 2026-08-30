@@ -6,8 +6,8 @@ determinística.
 
 ## Estado atual
 
-A fundação React + TypeScript + Vite está configurada. O domínio e os contratos
-iniciais foram definidos, mas a fatia vertical ainda será implementada
+A fundação React + TypeScript + Vite, o Dashboard e o fluxo de upload/processamento
+simulado estão configurados. Conferência, edição e aprovação serão implementadas
 incrementalmente.
 
 ## Requisitos

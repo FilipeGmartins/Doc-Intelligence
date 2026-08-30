@@ -73,3 +73,33 @@ quando as telas justificarem.
 **Motivo:** evitar configuração e dependências antes de existir uma interface.
 
 **Trade-offs:** estilos deverão seguir convenções claras conforme crescerem.
+
+## ADR-008 — Binário não persistido no mock
+
+**Decisão:** persistir metadados e resultados, mantendo previews binários apenas
+durante a sessão atual do navegador.
+
+**Alternativas:** converter arquivos para Base64 no `localStorage` ou usar
+IndexedDB.
+
+**Motivo:** `localStorage` possui limite reduzido e não é adequado para documentos
+ou dados sensíveis.
+
+**Trade-offs:** após recarregar a página, o registro permanece, mas o preview do
+arquivo recém-enviado pode não estar mais disponível. Em produção, o binário será
+enviado para storage privado e o banco guardará somente a referência.
+
+## ADR-009 — Conferência como etapa anterior à finalização
+
+**Decisão:** tratar dados extraídos como provisórios até a aprovação explícita do
+funcionário. Salvar correções não finaliza o documento; aprovar muda o estado para
+`approved`.
+
+**Alternativas:** aprovar automaticamente ao salvar ou manter um único estado de
+documento processado.
+
+**Motivo:** aproxima a experiência de um cadastro conferido antes da conclusão,
+deixa o fluxo compreensível e cria um ponto claro para auditoria.
+
+**Trade-offs:** acrescenta uma ação ao fluxo e exige diferenciar rascunho salvo de
+documento finalizado.

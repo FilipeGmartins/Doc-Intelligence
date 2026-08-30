@@ -29,6 +29,25 @@ Retorna `200` com o documento ou `404` com `DOCUMENT_NOT_FOUND`.
 Aceita `suggestedFileName`, `documentType` e/ou `extractedFields`. Retorna o
 documento atualizado.
 
+Exemplo de edição futura:
+
+```json
+{
+  "updatedAt": "2026-08-30T18:30:00.000Z",
+  "extractedFields": [
+    {
+      "id": "field-cpf-joao",
+      "value": "000.111.222-44",
+      "manuallyEdited": true
+    }
+  ]
+}
+```
+
+Se `updatedAt` estiver desatualizado, a API futura poderá responder `409` com
+`DOCUMENT_VERSION_CONFLICT`. Controle de concorrência não está implementado nesta
+fatia.
+
 ### `POST /documents/:id/reprocess`
 
 Reinicia um documento com falha ou resultado revisável. Retorna `202` com o novo

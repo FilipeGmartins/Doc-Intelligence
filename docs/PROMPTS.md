@@ -1050,3 +1050,22 @@ continue com as implementacoes que estavam sendo feitas anteriormente
 a dashboard esta muito bem feita agora devera ser feita a implementação de envio de documentos mas antes disso iremos subir o projeto para o github&#x20;
 assim ficara mais facil controlar e vercionar as proximas versões 
 ```
+
+## Prompt 006 — Upload, edição e banco de dados
+
+```text
+execute entao&#x20;
+apos isso veja como podera ser feita o envio de arquivos&#x20;
+a parte de edicao dos mesmos&#x20;
+e sobre o link com o banco de dados 
+```
+
+## Prompt 007 — Pull Requests por etapa e conferência antes da finalização
+
+```text
+o projeto pede para que um dos seus requisitos tecnicos seka o rastreio das alteracoes&#x20;
+por conta disso vamos fazer os Pulls requestes por parte&#x20;
+suba a alteracao do envio de documentos agora&#x20;
+apos o novo envio vamos fazer a nova etapa para conferencia&#x20;
+eu penso que pode ser importante na parte de documento ser simular a uma parte de cadastro onde as informacoes do usuario ficar aguardando seres editadas antes da finalizacao do cadastro 
+```
