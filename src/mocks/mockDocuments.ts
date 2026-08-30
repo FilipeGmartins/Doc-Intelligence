@@ -1,0 +1,53 @@
+import type { DocumentRecord } from '../types/document'
+
+export const mockDocuments: DocumentRecord[] = [
+  {
+    id: 'doc-identidade-ficticia',
+    originalFileName: 'identidade_joao_silva.jpg',
+    suggestedFileName: 'IDENTIDADE_JOAO_HENRIQUE_SILVA.pdf',
+    mimeType: 'image/jpeg',
+    sizeInBytes: 842_160,
+    documentType: 'Documento de Identidade',
+    status: 'review_required',
+    confidence: 0.68,
+    extractedFields: [
+      { id: 'field-nome-joao', key: 'name', label: 'Nome', value: 'João Henrique Silva', confidence: 0.96, manuallyEdited: false },
+      { id: 'field-cpf-joao', key: 'cpf', label: 'CPF', value: '000.111.222-33', confidence: 0.61, manuallyEdited: false },
+      { id: 'field-nascimento-joao', key: 'birthDate', label: 'Data de nascimento', value: '15/04/1994', confidence: 0.78, manuallyEdited: false },
+    ],
+    createdAt: '2026-08-30T13:15:00.000Z',
+    updatedAt: '2026-08-30T13:15:00.000Z',
+  },
+  {
+    id: 'doc-comprovante-ficticio',
+    originalFileName: 'comprovante_maria.pdf',
+    suggestedFileName: 'COMPROVANTE_RESIDENCIA_MARIA_FERREIRA.pdf',
+    mimeType: 'application/pdf',
+    sizeInBytes: 1_184_920,
+    documentType: 'Comprovante de residência',
+    status: 'processed',
+    confidence: 0.94,
+    extractedFields: [
+      { id: 'field-nome-maria', key: 'name', label: 'Nome', value: 'Maria Ferreira', confidence: 0.97, manuallyEdited: false },
+      { id: 'field-endereco-maria', key: 'address', label: 'Endereço', value: 'Rua das Palmeiras, 120', confidence: 0.92, manuallyEdited: false },
+      { id: 'field-cidade-maria', key: 'city', label: 'Cidade', value: 'Mossoró', confidence: 0.95, manuallyEdited: false },
+      { id: 'field-estado-maria', key: 'state', label: 'Estado', value: 'RN', confidence: 0.98, manuallyEdited: false },
+    ],
+    createdAt: '2026-08-30T12:40:00.000Z',
+    updatedAt: '2026-08-30T12:40:00.000Z',
+  },
+  {
+    id: 'doc-falha-ficticia',
+    originalFileName: 'contrato_falha_demo.pdf',
+    suggestedFileName: '',
+    mimeType: 'application/pdf',
+    sizeInBytes: 624_310,
+    documentType: 'Não identificado',
+    status: 'failed',
+    confidence: null,
+    extractedFields: [],
+    processingError: 'Não foi possível processar este documento.',
+    createdAt: '2026-08-30T11:55:00.000Z',
+    updatedAt: '2026-08-30T11:55:04.000Z',
+  },
+]
