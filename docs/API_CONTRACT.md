@@ -86,4 +86,27 @@ Aceita `query` e `status` como filtros opcionais. O status documental pode ser
 `complete`, `pending_document` ou `update_required`. Retorna dados cadastrais
 resumidos, quantidade de documentos, pendências e data da última atualização.
 
-Detalhe e edição de pessoas não fazem parte desta fatia.
+Na simulação atual, a edição de pessoas permite administrar requisitos e exceções.
+No fluxo normal, a aprovação documental atualiza automaticamente a categoria
+recebida e recalcula a situação da pessoa.
+
+## Atendimentos de WhatsApp
+
+### `GET /intake-conversations`
+
+Lista conversas, progresso da coleta, mensagens e estado do pré-cadastro.
+
+### `POST /intake-conversations/:id/replies`
+
+Registra uma resposta simulada e avança a coleta guiada.
+
+### `POST /intake-conversations/:id/documents/mock`
+
+Simula o recebimento, cria a pessoa provisória, processa o documento e o coloca na
+fila de conferência com vínculo de cliente e categoria.
+
+### `POST /intake-conversations/:id/approve`
+
+Valida o pré-cadastro de forma idempotente. A aprovação do documento continua
+separada e é responsável por marcar o requisito como recebido. Uma implementação
+real receberia eventos por webhook da API oficial, fora do navegador.

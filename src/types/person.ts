@@ -14,6 +14,8 @@ export interface PersonRecord {
   updatedAt: string
   documentRequirements?: DocumentCategory[]
   receivedDocuments?: DocumentCategory[]
+  source?: 'manual' | 'whatsapp'
+  sourceReference?: string
 }
 
 export interface UpdatePersonInput {
@@ -28,4 +30,12 @@ export interface UpdatePersonInput {
 export interface PersonListFilters {
   query?: string
   status?: PersonDocumentStatus
+}
+
+export interface CreatePersonFromIntakeInput {
+  sourceReference: string
+  name: string
+  identifier: string
+  email: string
+  documentCount: number
 }

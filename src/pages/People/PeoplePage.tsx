@@ -98,7 +98,7 @@ export function PeoplePage() {
           <div className="people-list">{people.map((person) => (
             <article className="person-row" key={person.id}>
               <span className="person-avatar" aria-hidden="true">{getInitials(person.name)}</span>
-              <div className="person-identity"><strong>{person.name}</strong><span>{person.identifier}</span><small>{person.email}</small></div>
+              <div className="person-identity"><strong>{person.name}{person.source === 'whatsapp' ? <em className="source-label">WhatsApp</em> : null}</strong><span>{person.identifier}</span><small>{person.email}</small></div>
               <div className="person-documents"><strong>{person.documentCount} documentos</strong><span>{person.documentStatus === 'pending_document' ? `Faltam: ${person.missingDocuments.join(', ')}` : person.updateReason ?? 'Cadastro conferido e atualizado'}</span></div>
               <div className="person-state"><PersonStatusBadge status={person.documentStatus} /><small>Atualizado em {dateFormatter.format(new Date(person.updatedAt))}</small></div>
               <button className="person-edit-button" type="button" onClick={() => openEditor(person)} aria-label={`Editar cadastro de ${person.name}`}><Pencil size={16} aria-hidden="true" />Editar</button>

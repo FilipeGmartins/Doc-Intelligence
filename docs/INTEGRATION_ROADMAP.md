@@ -27,6 +27,7 @@ contratos em `API_CONTRACT.md` são a base conceitual, não uma API em produçã
 
 ## Automação de atendimento
 
-O experimento de WhatsApp permanece em branch separada. Uma integração futura
-deverá usar webhooks oficiais, consentimento, idempotência e tratamento de
-reentregas. Ela não faz parte desta etapa de documentos.
+O experimento de WhatsApp agora compartilha o fluxo de pessoas, documentos e
+conferência nesta branch. Ele continua inteiramente local e determinístico. Uma
+integração futura deverá substituir apenas o adaptador de entrada por webhooks
+oficiais, com consentimento, idempotência e tratamento de reentregas.

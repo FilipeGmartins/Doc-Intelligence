@@ -35,3 +35,7 @@
 - Inclusão de cheque bancário, além de carteira de trabalho e contracheque.
 - Recálculo automático de pendências após a edição do cliente.
 - Persistência simulada das pessoas atrás de uma interface de repositório.
+- União do atendimento mockado por WhatsApp com o fluxo documental principal.
+- Criação automática de pessoa provisória e documento em revisão a partir da conversa.
+- Correção de cliente e categoria diretamente na conferência documental.
+- Aprovação documental atualizando automaticamente a situação da pessoa.

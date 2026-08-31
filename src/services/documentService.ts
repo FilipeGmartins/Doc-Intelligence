@@ -13,6 +13,7 @@ import type {
 import { getStatusFromConfidence } from '../utils/confidence'
 import type { AIProcessor } from './AIProcessor'
 import { MockAIService } from './mockAIService'
+import { PersonService, personService } from './personService'
 
 export interface DocumentServiceContract {
   upload(files: File[]): Promise<DocumentRecord[]>
@@ -23,6 +24,7 @@ export interface DocumentServiceContract {
   process(id: string): Promise<DocumentRecord>
   reprocess(id: string): Promise<DocumentRecord>
   approve(id: string): Promise<DocumentRecord>
+  resetDemo(): Promise<DocumentRecord[]>
 }
 
 function createId(): string {
@@ -54,13 +56,16 @@ function markEditedFields(
 export class DocumentService implements DocumentServiceContract {
   private readonly repository: DocumentRepository
   private readonly aiService: AIProcessor
+  private readonly people: PersonService
 
   constructor(
     repository: DocumentRepository,
     aiService: AIProcessor,
+    people: PersonService = personService,
   ) {
     this.repository = repository
     this.aiService = aiService
+    this.people = people
   }
 
   async upload(files: File[]): Promise<DocumentRecord[]> {
@@ -182,12 +187,20 @@ export class DocumentService implements DocumentServiceContract {
     }
 
     const now = new Date().toISOString()
-    return this.repository.update(id, {
+    const approved = await this.repository.update(id, {
       status: 'approved',
       approvedAt: now,
       events: [...document.events, createEvent('approved', 'Documento conferido e aprovado.', 'Ana Souza')],
       updatedAt: now,
     })
+    if (approved.personId && approved.expectedCategory) {
+      await this.people.markDocumentReceived(approved.personId, approved.expectedCategory)
+    }
+    return approved
+  }
+
+  resetDemo(): Promise<DocumentRecord[]> {
+    return this.repository.reset()
   }
 }
 

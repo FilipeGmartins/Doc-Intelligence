@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { DocumentStatusBadge } from '../../components/documents/DocumentStatusBadge'
 import { documentService } from '../../services/documentService'
-import type { DocumentRecord, ExtractedField } from '../../types/document'
+import { personService } from '../../services/personService'
+import { DOCUMENT_CATEGORY_OPTIONS, type DocumentCategory, type DocumentRecord, type ExtractedField } from '../../types/document'
+import type { PersonRecord } from '../../types/person'
 
 const eventDateFormatter = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
 
@@ -11,6 +13,9 @@ export function DocumentDetailsPage() {
   const { id = '' } = useParams()
   const [document, setDocument] = useState<DocumentRecord | null>(null)
   const [fields, setFields] = useState<ExtractedField[]>([])
+  const [people, setPeople] = useState<PersonRecord[]>([])
+  const [personId, setPersonId] = useState('')
+  const [category, setCategory] = useState<DocumentCategory>('other')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
@@ -18,23 +23,29 @@ export function DocumentDetailsPage() {
 
   useEffect(() => {
     let active = true
-    void documentService.getById(id).then((result) => { if (active) { setDocument(result); setFields(result.extractedFields); setLoading(false) } }, () => { if (active) { setError('Documento não encontrado.'); setLoading(false) } })
+    void Promise.all([documentService.getById(id), personService.list()]).then(([result, personList]) => { if (active) { setDocument(result); setFields(result.extractedFields); setPeople(personList); setPersonId(result.personId ?? ''); setCategory(result.expectedCategory ?? 'other'); setLoading(false) } }, () => { if (active) { setError('Documento não encontrado.'); setLoading(false) } })
     return () => { active = false }
   }, [id])
 
-  const dirty = Boolean(document && fields.some((field) => field.value !== document.extractedFields.find(({ id: fieldId }) => fieldId === field.id)?.value))
+  const dirty = Boolean(document && (personId !== (document.personId ?? '') || category !== (document.expectedCategory ?? 'other') || fields.some((field) => field.value !== document.extractedFields.find(({ id: fieldId }) => fieldId === field.id)?.value)))
+  const linkedPerson = people.find((person) => person.id === personId)
+  const categoryLabel = DOCUMENT_CATEGORY_OPTIONS.find((option) => option.value === category)?.label ?? 'Documento'
 
   const save = async () => {
     if (!document) return
     setSaving(true); setMessage(null)
-    const updated = await documentService.update(document.id, { extractedFields: fields })
+    const updated = await documentService.update(document.id, { extractedFields: fields, personId, expectedCategory: category })
     setDocument(updated); setFields(updated.extractedFields); setSaving(false); setMessage('Alterações salvas com sucesso. O documento continua aguardando aprovação.')
   }
 
   const approve = async () => {
     if (!document || dirty) return
     const updated = await documentService.approve(document.id)
-    setDocument(updated); setMessage('Documento aprovado e cadastro finalizado com sucesso.')
+    setDocument(updated)
+    const refreshedPeople = await personService.list()
+    setPeople(refreshedPeople)
+    const refreshedPerson = refreshedPeople.find((person) => person.id === updated.personId)
+    setMessage(refreshedPerson ? `${categoryLabel} aprovado e marcado como recebido para ${refreshedPerson.name}.` : 'Documento aprovado com sucesso.')
   }
 
   if (loading) return <div className="page"><div className="state-message">Carregando documento...</div></div>
@@ -48,7 +59,9 @@ export function DocumentDetailsPage() {
       <div className="details-grid">
         <section className="document-preview"><div className="preview-heading"><span>Documento original</span><small>{document.mimeType}</small></div>{document.previewUrl ? document.mimeType === 'application/pdf' ? <iframe title={`Preview de ${document.originalFileName}`} src={document.previewUrl} /> : <img src={document.previewUrl} alt={`Preview de ${document.originalFileName}`} /> : <div className="preview-placeholder"><FileText size={54} /><strong>Preview indisponível</strong><p>O registro foi preservado, mas o arquivo binário existe somente durante a sessão do envio.</p></div>}</section>
         <section className="extracted-form"><div className="form-heading"><div><span>Dados extraídos</span><small>{document.documentType}</small></div><strong>{Math.round((document.confidence ?? 0) * 100)}% de confiança</strong></div>
-          {document.status === 'approved' && <div className="finalized-banner"><Check size={17} />Cadastro finalizado. Os dados abaixo foram aprovados.</div>}
+          {document.status === 'approved' && <div className="finalized-banner"><Check size={17} />Documento finalizado. Os dados abaixo foram aprovados.</div>}
+          <div className="review-linkage"><label><span>Cliente vinculado</span><select disabled={document.status === 'approved'} value={personId} onChange={(event) => setPersonId(event.target.value)}><option value="">Sem vínculo</option>{people.map((person) => <option key={person.id} value={person.id}>{person.name}</option>)}</select></label><label><span>Categoria documental</span><select disabled={document.status === 'approved'} value={category} onChange={(event) => setCategory(event.target.value as DocumentCategory)}>{DOCUMENT_CATEGORY_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label></div>
+          {linkedPerson && <div className={`automation-impact ${document.status === 'approved' ? 'automation-impact--done' : ''}`}><Check size={17} /><span><strong>{document.status === 'approved' ? 'Cadastro atualizado automaticamente' : 'Automação após a aprovação'}</strong>{document.status === 'approved' ? `${categoryLabel} foi marcado como recebido para ${linkedPerson.name}.` : `Ao aprovar, ${categoryLabel} será marcado como recebido para ${linkedPerson.name}.`}</span></div>}
           <div className="provisional-banner"><AlertTriangle size={17} /><span><strong>Dados provisórios</strong>Confira todos os campos antes de finalizar.</span></div>
           <div className="field-list">{fields.map((field) => <label className={`extracted-field ${field.confidence < .8 ? 'extracted-field--warning' : ''}`} key={field.id}><span><strong>{field.label}</strong><small>Confiança: {Math.round(field.confidence * 100)}% {field.confidence < .8 ? '· Revisar' : ''}</small></span><input disabled={document.status === 'approved'} value={field.value} onChange={(event) => setFields((current) => current.map((item) => item.id === field.id ? { ...item, value: event.target.value } : item))} />{(field.manuallyEdited || field.value !== document.extractedFields.find(({ id }) => id === field.id)?.value) && <em>Corrigido manualmente</em>}</label>)}</div>
           {document.status !== 'approved' && <div className="form-actions"><button className="secondary-button action-save" type="button" disabled={!dirty || saving} onClick={() => void save()}><Save size={17} />{saving ? 'Salvando...' : 'Salvar alterações'}</button><button className="primary-button primary-button--button" type="button" disabled={dirty || saving} title={dirty ? 'Salve as alterações antes de aprovar' : undefined} onClick={() => void approve()}><Check size={18} />Aprovar documento</button></div>}

@@ -34,3 +34,8 @@ do fluxo implementado. Requisitos serão rastreados contra a Definition of Done.
   foco do desafio, a evolução documental foi isolada em branch sem o WhatsApp.
 
 Este documento será atualizado durante o desenvolvimento.
+
+### Integração das branches de completude e WhatsApp
+
+- A união automática encontrou conflitos nos serviços de pessoa, modelos, estilos e documentação porque as duas branches evoluíram a partir do mesmo ponto.
+- A correção preservou o modelo documental mais recente e consolidou a persistência de pessoas em um único repositório assíncrono, reutilizado pelo WhatsApp e pela Conferência.

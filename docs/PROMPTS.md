@@ -1123,3 +1123,34 @@ qual opcao vc aacha melhor ?
 ```
 
 Decisão aplicada: separar os checkboxes de documento exigido e documento recebido, recalculando automaticamente a situação documental da pessoa.
+
+## Prompt 014 — Edição também na revisão
+
+```text
+voce acha que seria bom ter na area onde se revisa o documento a mesma forma de edicao ?
+```
+
+## Prompt 015 — Evitar trabalho manual por pessoa
+
+```text
+mas voce nao acha que o sistema perde um pouco de automacao e eficiencia
+ja que a pessoa que estivesse trabalhando com o sistema teria que ir em pessoas para fazer nome por nome
+```
+
+## Prompt 016 — Eficiência considerando WhatsApp
+
+```text
+como vc acha que eu poderia tornar de forma mais eficiente , lembrando que ainda existe a automacao com o whatsapp
+```
+
+## Prompt 017 — Separação da branch
+
+```text
+essa brench esta separada do build principal ?
+```
+
+## Prompt 018 — Integração do fluxo ideal
+
+```text
+ja que ainda nao foi feito o comit una tanto a brach de automação de WhatsApp com a branch que estava sendo feita agora usando as regras de fluxo ideal que foram pensadas anteriormente
+```

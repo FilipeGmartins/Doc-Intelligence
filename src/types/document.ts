@@ -73,6 +73,8 @@ export interface UpdateDocumentInput {
   suggestedFileName?: string
   documentType?: string
   extractedFields?: ExtractedField[]
+  personId?: string
+  expectedCategory?: DocumentCategory
 }
 
 export interface AIProcessingResult {

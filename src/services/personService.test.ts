@@ -34,4 +34,21 @@ describe('PersonService', () => {
     expect(updated.missingDocuments).toEqual(['Cheque'])
     expect((await service.list({ query: 'roberto' }))[0].documentRequirements).toContain('bank_check')
   })
+
+  it('cria uma pessoa provisória do WhatsApp sem duplicidade', async () => {
+    const input = { sourceReference: 'intake-01', name: 'Pessoa Teste', identifier: 'CPF •••.000.•••-00', email: 'teste@exemplo.test', documentCount: 0 }
+    const first = await service.createFromIntake(input)
+    const second = await service.createFromIntake(input)
+
+    expect(first.source).toBe('whatsapp')
+    expect(first.documentRequirements).toEqual(['identity', 'proof_of_residence'])
+    expect(second.id).toBe(first.id)
+    expect((await service.list({ query: 'Pessoa Teste' }))).toHaveLength(1)
+  })
+
+  it('marca o documento aprovado como recebido e mantém somente o restante pendente', async () => {
+    const updated = await service.markDocumentReceived('person-carlos-santos', 'proof_of_residence')
+    expect(updated.receivedDocuments).toContain('proof_of_residence')
+    expect(updated.missingDocuments).toEqual(['Contracheque'])
+  })
 })

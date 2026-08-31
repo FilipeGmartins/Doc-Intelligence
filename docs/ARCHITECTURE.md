@@ -60,12 +60,42 @@ funcionário.
 O catálogo demonstrativo de pessoas segue um contrato próprio:
 
 ```text
-PeoplePage -> usePeople -> PersonService -> mockPeople
+PeoplePage -> usePeople -> PersonService -> PersonRepository -> MockPeopleDatabase
 ```
 
 O tema é estado de interface compartilhado por `ThemeProvider`. A preferência é
 o único dado visual persistido diretamente no navegador, pois não representa dado
 de negócio e deve permanecer específico do dispositivo.
+
+## Automação demonstrativa de atendimento
+
+O fluxo de WhatsApp não se conecta a um canal externo. Ele simula um webhook e um
+bot guiado por estados determinísticos:
+
+```text
+WhatsAppPage
+  -> ConversationService
+  -> ConversationRepository
+  -> MockConversationRepository
+  -> MockConversationDatabase / localStorage
+```
+
+Durante a coleta, `ConversationService` cria uma pessoa provisória de forma
+idempotente, envia o documento para `DocumentService` e preserva os identificadores
+da pessoa e do documento na conversa.
+
+```text
+novo contato -> pessoa provisória -> documento processado -> conferência humana
+  -> documento aprovado -> requisito recebido em Pessoas
+```
+
+`DocumentService.approve()` chama `PersonService.markDocumentReceived()`. Assim,
+a aprovação documental é a única ação cotidiana necessária para atualizar a
+situação consolidada; a edição manual em Pessoas permanece apenas para exceções.
+
+Em produção, webhooks da WhatsApp Business Cloud API alimentariam o contrato de
+conversa. Consentimento, autenticação, proteção de dados, auditoria e tratamento
+de reentregas seriam obrigatórios antes de receber dados pessoais reais.
 
 ## Substituição futura
 

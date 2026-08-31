@@ -1,4 +1,4 @@
-import { FileCheck2, Files, LayoutDashboard, Menu, ScanText, Upload, UsersRound, X } from 'lucide-react'
+import { FileCheck2, Files, LayoutDashboard, Menu, MessageCircleMore, ScanText, Upload, UsersRound, X } from 'lucide-react'
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { ThemeToggle } from './ThemeToggle'
@@ -9,6 +9,7 @@ const navigation = [
   { label: 'Conferência', to: '/review', icon: FileCheck2 },
   { label: 'Documentos', to: '/documents', icon: Files },
   { label: 'Pessoas', to: '/people', icon: UsersRound },
+  { label: 'Atendimentos', to: '/whatsapp', icon: MessageCircleMore },
 ]
 
 export function AppLayout() {

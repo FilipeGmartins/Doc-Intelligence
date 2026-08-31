@@ -184,3 +184,10 @@ autenticação e processamento assíncrono.
 - **Motivo:** marcar apenas que um tipo existe não informa se ele é uma obrigação do cliente ou se o arquivo já chegou ao escritório.
 - **Consequência:** o status é recalculado automaticamente; qualquer item exigido e não recebido deixa a pessoa como `pending_document`.
 - **Limite atual:** a marcação de recebimento é uma simulação local e não representa um arquivo efetivamente armazenado.
+
+## ADR-017 — Um único fluxo para WhatsApp, revisão e pessoas
+
+- **Decisão:** o WhatsApp cria um cadastro provisório e um documento vinculado; a fila de Conferência é responsável pela validação, e a aprovação marca a categoria como recebida em Pessoas.
+- **Motivo:** evitar que o operador repita manualmente em Pessoas uma informação já confirmada durante a revisão.
+- **Consequência:** Pessoas passa a ser um painel consolidado e uma ferramenta de exceção, não uma segunda etapa obrigatória do trabalho.
+- **Limite atual:** mensagens, arquivos, processamento e eventos continuam totalmente simulados em armazenamento local.

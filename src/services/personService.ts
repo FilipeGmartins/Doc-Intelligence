@@ -1,54 +1,91 @@
-import { DOCUMENT_CATEGORY_OPTIONS } from '../types/document'
-import type { PersonListFilters, PersonRecord, UpdatePersonInput } from '../types/person'
-import { LocalPersonRepository, type PersonRepository } from './personRepository'
+import { MockPersonRepository } from '../repositories/MockPersonRepository'
+import type { PersonRepository } from '../repositories/PersonRepository'
+import { DOCUMENT_CATEGORY_OPTIONS, type DocumentCategory } from '../types/document'
+import type { CreatePersonFromIntakeInput, PersonListFilters, PersonRecord, UpdatePersonInput } from '../types/person'
 
 export interface PersonServiceContract {
   list(filters?: PersonListFilters): Promise<PersonRecord[]>
   update(id: string, input: UpdatePersonInput): Promise<PersonRecord>
+  createFromIntake(input: CreatePersonFromIntakeInput): Promise<PersonRecord>
+  markDocumentReceived(id: string, category: DocumentCategory): Promise<PersonRecord>
+  resetDemo(): Promise<PersonRecord[]>
 }
 
 export class PersonService implements PersonServiceContract {
   private readonly repository: PersonRepository
 
-  constructor(repository: PersonRepository = new LocalPersonRepository()) {
+  constructor(repository: PersonRepository = new MockPersonRepository()) {
     this.repository = repository
   }
 
-  async list(filters: PersonListFilters = {}): Promise<PersonRecord[]> {
-    const query = filters.query?.trim().toLocaleLowerCase('pt-BR')
-
-    return this.repository.list().filter((person) => {
-      if (filters.status && person.documentStatus !== filters.status) return false
-      if (!query) return true
-
-      return [person.name, person.email, person.identifier]
-        .some((value) => value.toLocaleLowerCase('pt-BR').includes(query))
-    })
+  list(filters: PersonListFilters = {}): Promise<PersonRecord[]> {
+    return this.repository.findAll(filters)
   }
 
   async update(id: string, input: UpdatePersonInput): Promise<PersonRecord> {
-    const current = this.repository.list().find((person) => person.id === id)
-    if (!current) throw new Error('Pessoa não encontrada.')
+    const current = (await this.repository.findAll()).find((person) => person.id === id)
+    if (!current) throw new Error('PERSON_NOT_FOUND')
 
-    const requirements = [...new Set(input.documentRequirements)]
-    const received = [...new Set(input.receivedDocuments)]
-    const missingCategories = requirements.filter((category) => !received.includes(category))
-    const labels = new Map(DOCUMENT_CATEGORY_OPTIONS.map((option) => [option.value, option.label]))
-    const updateReason = input.updateReason?.trim() || undefined
-
-    return this.repository.save({
+    return this.repository.update(id, this.recalculate({
       ...current,
       name: input.name.trim(),
       identifier: input.identifier.trim(),
       email: input.email.trim(),
+      documentRequirements: [...new Set(input.documentRequirements)],
+      receivedDocuments: [...new Set(input.receivedDocuments)],
+      updateReason: input.updateReason?.trim() || undefined,
+      updatedAt: new Date().toISOString(),
+    }))
+  }
+
+  async createFromIntake(input: CreatePersonFromIntakeInput): Promise<PersonRecord> {
+    const existing = await this.repository.findBySourceReference(input.sourceReference)
+    if (existing) return existing
+
+    return this.repository.create(this.recalculate({
+      id: `person-whatsapp-${input.sourceReference}`,
+      name: input.name,
+      identifier: input.identifier,
+      email: input.email,
+      documentStatus: 'pending_document',
+      documentCount: input.documentCount,
+      missingDocuments: [],
+      updatedAt: new Date().toISOString(),
+      source: 'whatsapp',
+      sourceReference: input.sourceReference,
+      documentRequirements: ['identity', 'proof_of_residence'],
+      receivedDocuments: [],
+    }))
+  }
+
+  async markDocumentReceived(id: string, category: DocumentCategory): Promise<PersonRecord> {
+    const current = (await this.repository.findAll()).find((person) => person.id === id)
+    if (!current) throw new Error('PERSON_NOT_FOUND')
+    const receivedDocuments = [...new Set([...(current.receivedDocuments ?? []), category])]
+    return this.repository.update(id, this.recalculate({
+      ...current,
+      receivedDocuments,
+      updatedAt: new Date().toISOString(),
+    }))
+  }
+
+  resetDemo(): Promise<PersonRecord[]> {
+    return this.repository.reset()
+  }
+
+  private recalculate(person: PersonRecord): PersonRecord {
+    const requirements = person.documentRequirements ?? []
+    const received = person.receivedDocuments ?? []
+    const missingCategories = requirements.filter((category) => !received.includes(category))
+    const labels = new Map(DOCUMENT_CATEGORY_OPTIONS.map((option) => [option.value, option.label]))
+    return {
+      ...person,
       documentRequirements: requirements,
       receivedDocuments: received,
       documentCount: received.length,
       missingDocuments: missingCategories.map((category) => labels.get(category) ?? category),
-      documentStatus: missingCategories.length ? 'pending_document' : updateReason ? 'update_required' : 'complete',
-      updateReason,
-      updatedAt: new Date().toISOString(),
-    })
+      documentStatus: missingCategories.length ? 'pending_document' : person.updateReason ? 'update_required' : 'complete',
+    }
   }
 }
 
