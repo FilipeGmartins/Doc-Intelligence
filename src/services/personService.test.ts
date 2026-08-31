@@ -51,4 +51,27 @@ describe('PersonService', () => {
     expect(updated.receivedDocuments).toContain('proof_of_residence')
     expect(updated.missingDocuments).toEqual(['Contracheque'])
   })
+
+  it('cria um cliente manual com requisitos próprios', async () => {
+    const created = await service.createManual({
+      name: 'Cliente Demonstração',
+      identifier: 'CPF •••.888.•••-88',
+      email: 'cliente.novo@exemplo.test',
+      documentRequirements: ['identity', 'contract'],
+    })
+
+    expect(created.source).toBe('manual')
+    expect(created.documentRequirements).toEqual(['identity', 'contract'])
+    expect(created.missingDocuments).toEqual(['Documento de identidade', 'Contrato'])
+    expect((await service.list({ query: 'cliente.novo' }))[0].id).toBe(created.id)
+  })
+
+  it('impede duplicidade manual por identificação ou e-mail', async () => {
+    await expect(service.createManual({
+      name: 'Carlos duplicado',
+      identifier: 'CPF •••.175.•••-42',
+      email: 'outro@exemplo.test',
+      documentRequirements: ['identity'],
+    })).rejects.toThrow('PERSON_ALREADY_EXISTS')
+  })
 })

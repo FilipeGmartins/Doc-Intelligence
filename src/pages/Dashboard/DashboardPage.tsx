@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, CheckCircle2, FileCheck2, FileStack, LoaderCircle, MessageCircleMore, Upload, UsersRound } from 'lucide-react'
+import { AlertTriangle, ArrowRight, CheckCircle2, FileCheck2, FileStack, LoaderCircle, MessageCircleMore, Upload, UserPlus, UsersRound } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { DocumentStatusBadge } from '../../components/documents/DocumentStatusBadge'
 import { useDocuments } from '../../hooks/useDocuments'
@@ -34,7 +34,7 @@ export function DashboardPage() {
     <div className="page">
       <div className="page-heading">
         <div><p className="eyebrow">Central operacional</p><h1>Dashboard</h1><p>Veja o que exige ação agora, do primeiro contato à documentação concluída.</p></div>
-        <Link className="primary-button" to="/upload"><Upload size={18} aria-hidden="true" />Enviar documentos</Link>
+        <div className="page-heading-actions"><Link className="secondary-button secondary-button--link" to="/upload?newClient=1"><UserPlus size={17} aria-hidden="true" />Novo cliente</Link><Link className="primary-button" to="/upload"><Upload size={18} aria-hidden="true" />Enviar documentos</Link></div>
       </div>
 
       {error ? <div className="feedback feedback--error" role="alert"><span>{error}</span><button type="button" onClick={reloadAll}>Tentar novamente</button></div> : null}

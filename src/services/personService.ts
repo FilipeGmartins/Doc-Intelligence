@@ -1,12 +1,13 @@
 import { MockPersonRepository } from '../repositories/MockPersonRepository'
 import type { PersonRepository } from '../repositories/PersonRepository'
 import { DOCUMENT_CATEGORY_OPTIONS, type DocumentCategory } from '../types/document'
-import type { CreatePersonFromIntakeInput, PersonListFilters, PersonRecord, UpdatePersonInput } from '../types/person'
+import type { CreateManualPersonInput, CreatePersonFromIntakeInput, PersonListFilters, PersonRecord, UpdatePersonInput } from '../types/person'
 
 export interface PersonServiceContract {
   list(filters?: PersonListFilters): Promise<PersonRecord[]>
   update(id: string, input: UpdatePersonInput): Promise<PersonRecord>
   createFromIntake(input: CreatePersonFromIntakeInput): Promise<PersonRecord>
+  createManual(input: CreateManualPersonInput): Promise<PersonRecord>
   markDocumentReceived(id: string, category: DocumentCategory): Promise<PersonRecord>
   resetDemo(): Promise<PersonRecord[]>
 }
@@ -54,6 +55,35 @@ export class PersonService implements PersonServiceContract {
       source: 'whatsapp',
       sourceReference: input.sourceReference,
       documentRequirements: ['identity', 'proof_of_residence'],
+      receivedDocuments: [],
+    }))
+  }
+
+  async createManual(input: CreateManualPersonInput): Promise<PersonRecord> {
+    const name = input.name.trim()
+    const identifier = input.identifier.trim()
+    const email = input.email.trim()
+    if (!name || !identifier || !email) throw new Error('INVALID_PERSON')
+
+    const normalizedIdentifier = identifier.toLocaleLowerCase('pt-BR')
+    const normalizedEmail = email.toLocaleLowerCase('pt-BR')
+    const existing = (await this.repository.findAll()).find((person) => (
+      person.identifier.toLocaleLowerCase('pt-BR') === normalizedIdentifier
+      || person.email.toLocaleLowerCase('pt-BR') === normalizedEmail
+    ))
+    if (existing) throw new Error('PERSON_ALREADY_EXISTS')
+
+    return this.repository.create(this.recalculate({
+      id: `person-manual-${crypto.randomUUID()}`,
+      name,
+      identifier,
+      email,
+      documentStatus: 'pending_document',
+      documentCount: 0,
+      missingDocuments: [],
+      updatedAt: new Date().toISOString(),
+      source: 'manual',
+      documentRequirements: [...new Set(input.documentRequirements)],
       receivedDocuments: [],
     }))
   }

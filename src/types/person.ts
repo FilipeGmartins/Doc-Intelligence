@@ -39,3 +39,10 @@ export interface CreatePersonFromIntakeInput {
   email: string
   documentCount: number
 }
+
+export interface CreateManualPersonInput {
+  name: string
+  identifier: string
+  email: string
+  documentRequirements: DocumentCategory[]
+}

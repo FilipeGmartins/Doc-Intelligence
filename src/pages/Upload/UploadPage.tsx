@@ -1,6 +1,6 @@
-import { AlertCircle, Check, CheckCircle2, FileText, LoaderCircle, RotateCcw, UploadCloud, UserRound } from 'lucide-react'
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { AlertCircle, Check, CheckCircle2, FileText, LoaderCircle, Plus, RotateCcw, UploadCloud, UserPlus, UserRound, X } from 'lucide-react'
+import { useState, type FormEvent } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { DocumentStatusBadge } from '../../components/documents/DocumentStatusBadge'
 import { usePeople } from '../../hooks/usePeople'
 import { documentService } from '../../services/documentService'
@@ -14,13 +14,19 @@ interface UploadError {
 }
 
 export function UploadPage() {
-  const { people, loading: loadingPeople } = usePeople()
+  const { people, loading: loadingPeople, createManual } = usePeople()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [personId, setPersonId] = useState('')
   const [categories, setCategories] = useState<DocumentCategory[]>([])
   const [files, setFiles] = useState<Partial<Record<DocumentCategory, File>>>({})
   const [errors, setErrors] = useState<UploadError[]>([])
   const [jobs, setJobs] = useState<DocumentRecord[]>([])
   const [processing, setProcessing] = useState(false)
+  const [showClientForm, setShowClientForm] = useState(searchParams.get('newClient') === '1')
+  const [creatingClient, setCreatingClient] = useState(false)
+  const [clientError, setClientError] = useState('')
+  const [clientSuccess, setClientSuccess] = useState('')
+  const [clientDraft, setClientDraft] = useState({ name: '', identifier: '', email: '', documentRequirements: ['identity', 'proof_of_residence'] as DocumentCategory[] })
 
   const person = people.find((item) => item.id === personId)
   const recommended = person?.documentRequirements ?? []
@@ -33,6 +39,43 @@ export function UploadPage() {
     setFiles({})
     setJobs([])
     setErrors([])
+    setClientSuccess('')
+  }
+
+  const closeClientForm = () => {
+    setShowClientForm(false)
+    setClientError('')
+    setSearchParams({}, { replace: true })
+  }
+
+  const toggleClientRequirement = (category: DocumentCategory) => {
+    setClientDraft((current) => ({
+      ...current,
+      documentRequirements: current.documentRequirements.includes(category)
+        ? current.documentRequirements.filter((item) => item !== category)
+        : [...current.documentRequirements, category],
+    }))
+  }
+
+  const createClient = async (event: FormEvent) => {
+    event.preventDefault()
+    setCreatingClient(true)
+    setClientError('')
+    try {
+      const created = await createManual(clientDraft)
+      setPersonId(created.id)
+      setCategories(created.documentRequirements ?? [])
+      setFiles({})
+      setJobs([])
+      setErrors([])
+      setClientDraft({ name: '', identifier: '', email: '', documentRequirements: ['identity', 'proof_of_residence'] })
+      setClientSuccess(`${created.name} foi criado e selecionado para este envio.`)
+      closeClientForm()
+    } catch (error) {
+      setClientError(error instanceof Error && error.message === 'PERSON_ALREADY_EXISTS' ? 'Já existe um cliente com esta identificação ou e-mail.' : 'Preencha nome, identificação e e-mail para criar o cliente.')
+    } finally {
+      setCreatingClient(false)
+    }
   }
 
   const toggleCategory = (category: DocumentCategory) => {
@@ -93,9 +136,21 @@ export function UploadPage() {
 
       <section className="client-selector panel">
         <div className="client-selector-icon"><UserRound size={22} aria-hidden="true" /></div>
-        <label><span>Cliente do atendimento</span><select value={personId} disabled={loadingPeople} onChange={(event) => selectPerson(event.target.value)}><option value="">Selecione uma pessoa...</option>{people.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label>
+        <div className="client-selector-control"><span><label htmlFor="upload-client">Cliente do atendimento</label><button type="button" onClick={() => { setShowClientForm(true); setClientError('') }}><Plus size={14} />Novo cliente</button></span><select id="upload-client" value={personId} disabled={loadingPeople} onChange={(event) => selectPerson(event.target.value)}><option value="">Selecione uma pessoa...</option>{people.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></div>
         <p>{person ? `${person.identifier} · ${person.email}` : 'A seleção vincula os documentos ao cadastro fictício escolhido.'}</p>
       </section>
+
+      {clientSuccess ? <div className="quick-client-success" role="status"><CheckCircle2 size={17} /><span>{clientSuccess}</span></div> : null}
+
+      {showClientForm ? <section className="quick-client-panel panel" aria-labelledby="quick-client-title">
+        <div className="quick-client-heading"><div><span className="quick-client-icon"><UserPlus size={20} /></span><span><h2 id="quick-client-title">Novo cliente</h2><p>Cadastro manual e fictício para continuar o envio sem sair desta tela.</p></span></div><button type="button" aria-label="Fechar cadastro de cliente" onClick={closeClientForm}><X size={18} /></button></div>
+        <form onSubmit={(event) => void createClient(event)}>
+          <div className="quick-client-fields"><label><span>Nome completo</span><input autoFocus required value={clientDraft.name} onChange={(event) => setClientDraft((current) => ({ ...current, name: event.target.value }))} placeholder="Ex.: Cliente Demonstração" /></label><label><span>CPF ou identificação fictícia</span><input required value={clientDraft.identifier} onChange={(event) => setClientDraft((current) => ({ ...current, identifier: event.target.value }))} placeholder="Ex.: CPF •••.000.•••-00" /></label><label className="quick-client-field--wide"><span>E-mail</span><input required type="email" value={clientDraft.email} onChange={(event) => setClientDraft((current) => ({ ...current, email: event.target.value }))} placeholder="cliente@exemplo.test" /></label></div>
+          <fieldset className="quick-client-requirements"><legend>Documentos inicialmente exigidos</legend><p>Você poderá ajustar essa lista agora ou posteriormente em Pessoas.</p><div>{DOCUMENT_CATEGORY_OPTIONS.map((option) => <label key={option.value}><input type="checkbox" checked={clientDraft.documentRequirements.includes(option.value)} onChange={() => toggleClientRequirement(option.value)} /><span className="custom-checkbox">{clientDraft.documentRequirements.includes(option.value) ? <Check size={14} /> : null}</span><span>{option.label}</span></label>)}</div></fieldset>
+          {clientError ? <p className="quick-client-error" role="alert">{clientError}</p> : null}
+          <div className="quick-client-actions"><button className="secondary-button" type="button" onClick={closeClientForm}>Cancelar</button><button className="primary-button primary-button--button" type="submit" disabled={creatingClient}>{creatingClient ? <LoaderCircle className="spin" size={17} /> : <UserPlus size={17} />}{creatingClient ? 'Criando...' : 'Criar e selecionar'}</button></div>
+        </form>
+      </section> : null}
 
       {person ? <>
         <section className="document-plan panel">

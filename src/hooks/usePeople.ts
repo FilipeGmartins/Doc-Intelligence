@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { personService } from '../services/personService'
-import type { PersonListFilters, PersonRecord } from '../types/person'
+import type { CreateManualPersonInput, PersonListFilters, PersonRecord } from '../types/person'
 import type { UpdatePersonInput } from '../types/person'
 
 export function usePeople(filters: PersonListFilters = {}) {
@@ -36,5 +36,10 @@ export function usePeople(filters: PersonListFilters = {}) {
     error,
     reload: () => setReloadVersion((version) => version + 1),
     update: (id: string, input: UpdatePersonInput) => personService.update(id, input),
+    createManual: async (input: CreateManualPersonInput) => {
+      const created = await personService.createManual(input)
+      setPeople((current) => [created, ...current.filter((person) => person.id !== created.id)])
+      return created
+    },
   }
 }
