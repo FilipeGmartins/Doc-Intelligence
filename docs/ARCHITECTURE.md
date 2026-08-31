@@ -22,7 +22,7 @@ Página/componente
 O processamento segue um ramo separado, coordenado pelo serviço:
 
 ```text
-DocumentService -> MockAIService -> resultado fictício determinístico
+DocumentService -> AIProcessor -> MockAIService -> resultado fictício determinístico
 ```
 
 ## Responsabilidades
@@ -34,8 +34,28 @@ DocumentService -> MockAIService -> resultado fictício determinístico
 - **MockDocumentRepository:** implementação local do contrato.
 - **MockDatabase:** serialização e acesso exclusivo ao `localStorage`.
 - **MockAIService:** atraso e resultados fictícios reproduzíveis.
+- **AIProcessor:** contrato que permite substituir o mock por um provedor remoto.
 
 Componentes não acessam diretamente `localStorage`, mocks ou Supabase.
+
+## Plano documental por cliente
+
+Cada pessoa possui uma lista inicial de categorias sugeridas, mas o funcionário
+pode marcar ou desmarcar itens para representar o atendimento real. O upload envia
+`personId` e `expectedCategory`, permitindo que o processador produza campos
+específicos para identidade, comprovante, contracheque, carteira de trabalho ou
+contrato.
+
+O fingerprint local combina cliente, nome, tamanho e última modificação. Ele serve
+somente para demonstrar detecção de possível duplicidade; uma API real deverá usar
+hash do conteúdo e chave de idempotência.
+
+## Auditoria
+
+Cada documento mantém eventos de recebimento, início de processamento, resultado,
+falha, correção manual e aprovação. Em produção, esses eventos deverão ser
+imutáveis, armazenados no servidor e associados à identidade autenticada do
+funcionário.
 
 O catálogo demonstrativo de pessoas segue um contrato próprio:
 
@@ -53,6 +73,8 @@ Uma integração real implementará `DocumentRepository` e será selecionada no 
 de composição da aplicação. As páginas continuarão consumindo o mesmo contrato de
 serviço. Upload binário e processamento assíncrono real poderão exigir pequenos
 ajustes no contrato, mas não uma reescrita da interface.
+O mesmo vale para `AIProcessor`: `MockAIService` poderá ser substituído por um
+adaptador remoto sem alterar `DocumentService`.
 
 ## Evolução para edição e persistência reais
 

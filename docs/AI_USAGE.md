@@ -21,7 +21,8 @@ do fluxo implementado. Requisitos serão rastreados contra a Definition of Done.
 
 - A arquitetura foi apresentada antes da implementação e aprovada pelo usuário.
 - A stack obrigatória prevaleceu sobre alternativas de scaffold ou hospedagem.
-- Nenhum commit foi executado automaticamente.
+- Commits e publicações foram executados apenas após solicitação ou dentro de uma
+  branch explicitamente criada para a etapa.
 
 ## Erros e rejeições
 
@@ -29,5 +30,7 @@ do fluxo implementado. Requisitos serão rastreados contra a Definition of Done.
   acesso restrito à rede. A execução foi interrompida e repetida com autorização.
 - Tailwind e bibliotecas de componentes foram adiados porque ainda não há telas que
   justifiquem essa complexidade.
+- O produto começou a acumular extensões de Pessoas e WhatsApp. Para preservar o
+  foco do desafio, a evolução documental foi isolada em branch sem o WhatsApp.
 
 Este documento será atualizado durante o desenvolvimento.

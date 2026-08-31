@@ -18,6 +18,11 @@
 - Tema escuro persistente, com preferência inicial baseada no sistema operacional.
 - Visão de pessoas com busca, filtros e indicadores de conformidade documental.
 - Refinamentos de identidade na navegação, títulos e superfícies da aplicação.
+- Plano documental por cliente com checklist e anexos separados por tipo.
+- Extrações específicas para identidade, comprovante, contracheque, carteira de trabalho e contrato.
+- Detecção local de possível duplicidade e trilha de auditoria por documento.
+- Contratos explícitos para substituição futura do processador e repositório mockados.
+- Teste de interface do envio vinculado ao cliente.
 - Documentação de arquitetura, decisões, API e uso de IA.
 
 ### Decidido

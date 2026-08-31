@@ -1102,3 +1102,14 @@ existiria uma especie de automacao onde o cliente poderia ir falando por whatsap
 e a partir do botao whatsapp que teria no sistema mostraria as pessoas que criaram o primeiro contato por cadastro e estao esperando a parte interna da empresa validar e finalizar as informacoes
 acha que isso é possivel e se possivel como poderia implementar e simular (de forma mockada) essa ideia
 ```
+
+## Prompt 012 — Completude documental em branch sem WhatsApp
+
+```text
+crie uma nova brech para evitar conflitos futuros e crie as implementacoes que ficaram faltando nos topicos citados
+nao vamos nos prender a informacoes reais ou uso de ia real ou API ja que nao sao nessesarios nessa etapa e nem na entregha em si porem deixe um espaco no codigo e na arquitetura
+pensando em uma futura inclusao dessas umplementacoes
+inclua no codigo um espaco para poder enviar outros tipos de documento como contracheques,carteiras de trabalho, contratos
+seria interessante um checkbox e um espaco para envio assim especificando cliente por cliente, nem todos vao enviar as mesmas informacoes
+depois que concluirmos iremos nos concentrar na simulacao do whatsapp mas nao agora
+```

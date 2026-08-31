@@ -12,6 +12,11 @@ documentos. A aplicação também oferece tema claro/escuro e uma visão consoli
 da situação documental das pessoas cadastradas. A persistência local fica isolada
 atrás do contrato de repositório.
 
+O envio pode ser planejado por cliente: cada pessoa possui sugestões próprias e o
+funcionário marca somente identidade, comprovante, contracheque, carteira de
+trabalho, contrato, laudo, procuração ou outros arquivos aplicáveis. O mock também
+registra duplicidade provável e o histórico das ações.
+
 ## Requisitos
 
 - Node.js 20 ou superior
@@ -42,5 +47,9 @@ npm test
 - [Uso de IA](docs/AI_USAGE.md)
 - [Prompts](docs/PROMPTS.md)
 - [Changelog](docs/CHANGELOG.md)
+- [Guia de demonstração](docs/DEMO_GUIDE.md)
+- [Pontos de extensão](docs/INTEGRATION_ROADMAP.md)
+- [Registro de tempo](docs/TIME_LOG.md)
+- [Carta de encerramento](docs/CARTA_ENCERRAMENTO_DOC_INTELLIGENCE.docx)
 
 Todos os dados funcionais usados no projeto serão fictícios.

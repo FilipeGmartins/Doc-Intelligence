@@ -128,3 +128,53 @@ CRM ou cadastro completo.
 
 **Trade-offs:** vínculos pessoa-documento ainda são demonstrativos e não podem ser
 editados nesta versão.
+
+## ADR-012 — Requisitos documentais configuráveis por cliente
+
+**Decisão:** sugerir categorias por pessoa e permitir ajuste por checkbox antes do
+envio, com um espaço de arquivo para cada tipo selecionado.
+
+**Alternativas:** uma lista fixa para todos ou upload sem vínculo com cliente.
+
+**Motivo:** os atendimentos não exigem os mesmos documentos e o vínculo melhora a
+rastreabilidade.
+
+**Trade-offs:** as sugestões são mockadas e ainda não derivam de regras de negócio
+persistidas no servidor.
+
+## ADR-013 — Detecção local de possível duplicidade
+
+**Decisão:** comparar cliente, nome, tamanho e última modificação antes de criar um
+registro.
+
+**Alternativas:** aceitar todo reenvio ou calcular hash criptográfico no navegador.
+
+**Motivo:** demonstrar o risco descrito no enunciado sem processar conteúdo real.
+
+**Trade-offs:** arquivos diferentes podem compartilhar metadados e o mesmo arquivo
+renomeado pode não ser reconhecido. Produção exige hash e idempotência no backend.
+
+## ADR-014 — Eventos de auditoria no registro
+
+**Decisão:** manter uma sequência de eventos para upload, processamento, correção,
+falha e aprovação.
+
+**Alternativas:** depender apenas do status atual.
+
+**Motivo:** explicar quem fez o quê e como o documento chegou ao estado final.
+
+**Trade-offs:** no `localStorage` os eventos podem ser alterados; em produção devem
+ser imutáveis e gravados no servidor.
+
+## ADR-015 — Contratos para integração futura
+
+**Decisão:** depender de `AIProcessor` e `DocumentRepository`, usando implementações
+mockadas na composição atual.
+
+**Alternativas:** codificar o mock diretamente nos componentes ou iniciar uma API
+real agora.
+
+**Motivo:** preservar o escopo da Trilha B e deixar pontos explícitos de troca.
+
+**Trade-offs:** o contrato remoto ainda poderá precisar de paginação, timeout,
+autenticação e processamento assíncrono.

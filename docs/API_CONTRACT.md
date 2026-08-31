@@ -8,6 +8,7 @@ Contrato conceitual para futura API REST. Datas usam ISO 8601, confiança varia 
 Campos principais: `id`, `originalFileName`, `suggestedFileName`, `mimeType`,
 `sizeInBytes`, `documentType`, `status`, `confidence`, `extractedFields`,
 `createdAt`, `updatedAt`, `approvedAt` e `processingError`.
+O modelo também admite `personId`, `expectedCategory`, `fingerprint` e `events`.
 
 ## Endpoints
 
@@ -15,6 +16,9 @@ Campos principais: `id`, `originalFileName`, `suggestedFileName`, `mimeType`,
 
 Recebe `multipart/form-data` com um ou mais arquivos. Retorna `201` com os
 documentos criados em estado `pending`.
+
+Cada arquivo pode informar `personId` e `expectedCategory`. Um possível reenvio
+poderá retornar `409` com `DUPLICATE_DOCUMENT` e o identificador já existente.
 
 ### `GET /documents`
 
@@ -68,8 +72,8 @@ Aprova um documento processado ou revisado. Retorna `200` com `status: approved`
 }
 ```
 
-Códigos iniciais: `INVALID_FILE`, `DOCUMENT_NOT_FOUND`, `INVALID_STATUS_TRANSITION`
-e `PROCESSING_FAILED`.
+Códigos iniciais: `INVALID_FILE`, `DOCUMENT_NOT_FOUND`, `INVALID_STATUS_TRANSITION`,
+`PROCESSING_FAILED` e `DUPLICATE_DOCUMENT`.
 
 Paginação, idempotência, controle otimista e versionamento formal não estão
 implementados nesta fatia, mas deverão ser definidos antes de uma API de produção.
