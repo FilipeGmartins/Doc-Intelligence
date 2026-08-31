@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { ConversationStatusBadge } from '../../components/conversations/ConversationStatusBadge'
 import { useConversations } from '../../hooks/useConversations'
 import type { IntakeStep } from '../../types/conversation'
+import { DOCUMENT_CATEGORY_OPTIONS } from '../../types/document'
 
 const timeFormatter = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' })
 
@@ -35,9 +36,10 @@ export function WhatsAppPage() {
 
   const summary = {
     active: conversations.filter((item) => ['new_contact', 'collecting_data'].includes(item.status)).length,
-    review: conversations.filter((item) => item.status === 'awaiting_internal_review').length,
+    review: conversations.filter((item) => ['awaiting_internal_review', 'awaiting_document_review'].includes(item.status)).length,
     approved: conversations.filter((item) => item.status === 'approved').length,
   }
+  const requestedDocumentLabel = DOCUMENT_CATEGORY_OPTIONS.find((option) => option.value === selected?.requestedCategory)?.label ?? 'documento solicitado'
 
   const execute = async (operation: () => Promise<unknown>, success: string) => {
     setBusy(true)
@@ -72,7 +74,7 @@ export function WhatsAppPage() {
         <span><BadgeCheck size={16} aria-hidden="true" /><strong>{summary.approved}</strong> finalizados</span>
       </div>
 
-      <div className="automation-note"><Info size={17} aria-hidden="true" /><p><strong>Fluxo integrado:</strong> o envio cria um cadastro provisório e coloca o documento na Conferência. Quando o documento for aprovado, Pessoas será atualizado automaticamente.</p></div>
+      <div className="automation-note"><Info size={17} aria-hidden="true" /><p><strong>Fluxo integrado:</strong> o envio cria um cadastro provisório e coloca o documento na Conferência. A aprovação atualiza Pessoas e solicita o próximo item pendente; a recusa pede um reenvio com o motivo.</p></div>
 
       {error ? <div className="feedback feedback--error"><span>{error}</span><button type="button" onClick={() => void reload()}>Tentar novamente</button></div> : null}
 
@@ -96,8 +98,8 @@ export function WhatsAppPage() {
             ))}</div>
             <form className="chat-composer" onSubmit={handleSubmit}>
               <label className="sr-only" htmlFor="mock-message">Resposta fictícia do cliente</label>
-              <input id="mock-message" value={message} onChange={(event) => setMessage(event.target.value)} placeholder={placeholderByStep[selected.currentStep]} disabled={busy || ['document', 'complete'].includes(selected.currentStep)} />
-              {selected.currentStep === 'document' ? <button className="attach-button" type="button" disabled={busy} onClick={() => void execute(() => attachMockDocument(selected.id), 'Documento fictício recebido. O pré-cadastro aguarda validação.')}><FileUp size={17} />Simular documento</button> : <button className="send-button" type="submit" disabled={busy || !message.trim() || selected.currentStep === 'complete'} aria-label="Enviar resposta simulada"><Send size={17} /></button>}
+              <input id="mock-message" value={message} onChange={(event) => setMessage(event.target.value)} placeholder={selected.currentStep === 'document' ? `Enviar ${requestedDocumentLabel.toLocaleLowerCase('pt-BR')}` : placeholderByStep[selected.currentStep]} disabled={busy || ['document', 'complete'].includes(selected.currentStep)} />
+              {selected.currentStep === 'document' ? <button className="attach-button" type="button" disabled={busy} onClick={() => void execute(() => attachMockDocument(selected.id), `${requestedDocumentLabel} fictício recebido e enviado à conferência.`)}><FileUp size={17} />Simular documento</button> : <button className="send-button" type="submit" disabled={busy || !message.trim() || selected.currentStep === 'complete'} aria-label="Enviar resposta simulada"><Send size={17} /></button>}
             </form>
           </section>
 
@@ -109,15 +111,18 @@ export function WhatsAppPage() {
               <DraftField label="Identificação" value={selected.draft.identifier} />
               <DraftField label="E-mail" value={selected.draft.email} />
               <DraftField label="Endereço" value={selected.draft.address} />
-              <DraftField label="Documento" value={selected.draft.documents[0] ?? ''} />
+              <DraftField label="Último documento" value={selected.draft.documents.at(-1) ?? ''} />
             </div>
             <div className="intake-actions">
               {feedback ? <p className="intake-feedback">{feedback}</p> : null}
               {selected.status === 'awaiting_internal_review' ? <button className="primary-button primary-button--button" type="button" disabled={busy} onClick={() => void execute(() => approve(selected.id), 'Pré-cadastro validado. O documento está na fila de conferência.')}><UserRoundCheck size={17} />Validar pré-cadastro</button> : null}
+              {selected.status === 'awaiting_document_review' ? <div className="intake-approved intake-approved--waiting"><Clock3 size={17} /><span><strong>Documento em conferência</strong><small>A equipe interna precisa aprovar ou solicitar um reenvio.</small></span></div> : null}
+              {selected.status === 'awaiting_document_review' ? <Link className="secondary-button secondary-button--link" to="/review"><FileCheck2 size={15} />Abrir Conferência</Link> : null}
               {selected.status === 'approved' ? <div className="intake-approved"><Check size={17} /><span><strong>Pré-cadastro validado</strong><small>O recebimento será confirmado após a aprovação documental.</small></span></div> : null}
               {selected.status === 'approved' && selected.documentIds?.length ? <Link className="secondary-button secondary-button--link" to="/review"><FileCheck2 size={15} />Abrir Conferência</Link> : null}
               {selected.status === 'approved' ? <Link className="secondary-button secondary-button--link" to="/people">Abrir Pessoas</Link> : null}
-              {!['awaiting_internal_review', 'approved'].includes(selected.status) ? <p className="awaiting-copy"><Clock3 size={15} />Complete a conversa para liberar a validação interna.</p> : null}
+              {['new_contact', 'collecting_data'].includes(selected.status) && !selected.approvedPersonId ? <p className="awaiting-copy"><Clock3 size={15} />Complete a conversa para liberar a validação interna.</p> : null}
+              {selected.status === 'collecting_data' && selected.approvedPersonId ? <p className="awaiting-copy"><Clock3 size={15} />Aguardando o envio de {requestedDocumentLabel.toLocaleLowerCase('pt-BR')}.</p> : null}
             </div>
           </aside>
         </div> : <div className="state-message">Selecione um atendimento.</div>}

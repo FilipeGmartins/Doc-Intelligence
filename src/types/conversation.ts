@@ -1,4 +1,6 @@
-export type ConversationStatus = 'new_contact' | 'collecting_data' | 'awaiting_internal_review' | 'approved'
+import type { DocumentCategory } from './document'
+
+export type ConversationStatus = 'new_contact' | 'collecting_data' | 'awaiting_internal_review' | 'awaiting_document_review' | 'approved'
 export type IntakeStep = 'name' | 'identifier' | 'email' | 'address' | 'document' | 'complete'
 export type MessageSender = 'bot' | 'customer' | 'system'
 
@@ -31,4 +33,5 @@ export interface IntakeConversation {
   approvedPersonId?: string
   provisionalPersonId?: string
   documentIds?: string[]
+  requestedCategory?: DocumentCategory
 }

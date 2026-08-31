@@ -24,6 +24,7 @@ export interface DocumentServiceContract {
   process(id: string): Promise<DocumentRecord>
   reprocess(id: string): Promise<DocumentRecord>
   approve(id: string): Promise<DocumentRecord>
+  reject(id: string, reason: string): Promise<DocumentRecord>
   resetDemo(): Promise<DocumentRecord[]>
 }
 
@@ -197,6 +198,22 @@ export class DocumentService implements DocumentServiceContract {
       await this.people.markDocumentReceived(approved.personId, approved.expectedCategory)
     }
     return approved
+  }
+
+  async reject(id: string, reason: string): Promise<DocumentRecord> {
+    const document = await this.getById(id)
+    if (!['processed', 'review_required'].includes(document.status)) {
+      throw new Error('INVALID_STATUS_TRANSITION')
+    }
+    const rejectionReason = reason.trim()
+    if (!rejectionReason) throw new Error('REJECTION_REASON_REQUIRED')
+    const now = new Date().toISOString()
+    return this.repository.update(id, {
+      status: 'rejected',
+      rejectionReason,
+      events: [...document.events, createEvent('rejected', `Documento recusado: ${rejectionReason}`, 'Ana Souza')],
+      updatedAt: now,
+    })
   }
 
   resetDemo(): Promise<DocumentRecord[]> {

@@ -4,6 +4,7 @@ export type DocumentStatus =
   | 'processed'
   | 'review_required'
   | 'failed'
+  | 'rejected'
   | 'approved'
 
 export type DocumentCategory =
@@ -23,6 +24,7 @@ export type DocumentEventType =
   | 'processed'
   | 'review_required'
   | 'failed'
+  | 'rejected'
   | 'manually_edited'
   | 'approved'
 
@@ -57,6 +59,7 @@ export interface DocumentRecord {
   updatedAt: string
   approvedAt?: string
   processingError?: string
+  rejectionReason?: string
   previewUrl?: string
   personId?: string
   expectedCategory?: DocumentCategory

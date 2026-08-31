@@ -5,6 +5,7 @@ const statusConfig = {
   new_contact: { label: 'Novo contato', icon: MessageCircleMore },
   collecting_data: { label: 'Coletando dados', icon: Bot },
   awaiting_internal_review: { label: 'Aguardando validação', icon: Clock3 },
+  awaiting_document_review: { label: 'Documento em conferência', icon: Clock3 },
   approved: { label: 'Cadastro criado', icon: BadgeCheck },
 } satisfies Record<ConversationStatus, { label: string; icon: typeof Clock3 }>
 

@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle2, Clock3, LoaderCircle, ShieldCheck } from 'lucide-react'
+import { AlertCircle, CheckCircle2, Clock3, LoaderCircle, ShieldCheck, XCircle } from 'lucide-react'
 import type { DocumentStatus } from '../../types/document'
 
 const statusConfig = {
@@ -7,6 +7,7 @@ const statusConfig = {
   processed: { label: 'Processado', icon: CheckCircle2 },
   review_required: { label: 'Revisão necessária', icon: AlertCircle },
   failed: { label: 'Falha', icon: AlertCircle },
+  rejected: { label: 'Recusado', icon: XCircle },
   approved: { label: 'Aprovado', icon: ShieldCheck },
 } satisfies Record<DocumentStatus, { label: string; icon: typeof Clock3 }>
 

@@ -7,6 +7,7 @@ import { MockDocumentRepository } from '../repositories/MockDocumentRepository'
 import { MockPersonRepository } from '../repositories/MockPersonRepository'
 import { ConversationService } from './conversationService'
 import { DocumentService } from './documentService'
+import { DocumentWorkflowService } from './documentWorkflowService'
 import { MockAIService } from './mockAIService'
 import { PersonService } from './personService'
 
@@ -14,6 +15,7 @@ describe('ConversationService', () => {
   let conversations: ConversationService
   let people: PersonService
   let documents: DocumentService
+  let workflow: DocumentWorkflowService
 
   beforeEach(() => {
     localStorage.clear()
@@ -25,6 +27,7 @@ describe('ConversationService', () => {
       0,
       documents,
     )
+    workflow = new DocumentWorkflowService(documents, conversations)
   })
 
   it('avança a coleta guiada até aguardar o documento', async () => {
@@ -59,9 +62,32 @@ describe('ConversationService', () => {
     expect((await people.list({ query: 'Gabriel Martins' }))).toHaveLength(1)
     expect(approved.documentIds).toHaveLength(1)
 
-    await documents.approve(approved.documentIds![0])
+    await workflow.approve(approved.documentIds![0])
     const updatedPerson = (await people.list({ query: 'Gabriel Martins' }))[0]
     expect(updatedPerson.receivedDocuments).toContain('identity')
     expect(updatedPerson.missingDocuments).toEqual(['Comprovante de residência'])
+
+    const followUp = (await conversations.list()).find((conversation) => conversation.id === approved.id)
+    expect(followUp?.status).toBe('collecting_data')
+    expect(followUp?.currentStep).toBe('document')
+    expect(followUp?.requestedCategory).toBe('proof_of_residence')
+    expect(followUp?.messages.at(-1)?.content).toContain('Comprovante de residência')
+  })
+
+  it('solicita reenvio no WhatsApp quando a conferência recusa o documento', async () => {
+    const approved = await conversations.approve('intake-gabriel-review')
+    const rejected = await workflow.reject(approved.documentIds![0], 'Foto cortada')
+    const conversation = (await conversations.list()).find((item) => item.id === approved.id)
+
+    expect(rejected.status).toBe('rejected')
+    expect(conversation?.status).toBe('collecting_data')
+    expect(conversation?.currentStep).toBe('document')
+    expect(conversation?.requestedCategory).toBe('identity')
+    expect(conversation?.messages.at(-1)?.content).toContain('Foto cortada')
+
+    const resubmitted = await conversations.attachMockDocument(approved.id)
+    expect(resubmitted.status).toBe('awaiting_document_review')
+    expect(resubmitted.documentIds).toHaveLength(2)
+    expect((await documents.getById(resubmitted.documentIds![1])).expectedCategory).toBe('identity')
   })
 })

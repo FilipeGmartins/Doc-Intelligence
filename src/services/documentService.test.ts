@@ -91,6 +91,15 @@ describe('DocumentService', () => {
     expect(approved.events.at(-1)?.actor).toBe('Ana Souza')
   })
 
+  it('registra recusa com motivo na trilha de auditoria', async () => {
+    const rejected = await service.reject('doc-identidade-ficticia', 'Imagem cortada e ilegível')
+
+    expect(rejected.status).toBe('rejected')
+    expect(rejected.rejectionReason).toBe('Imagem cortada e ilegível')
+    expect(rejected.events.at(-1)?.type).toBe('rejected')
+    expect(rejected.events.at(-1)?.description).toContain('Imagem cortada')
+  })
+
   it('não persiste URLs temporárias de preview entre sessões', () => {
     const database = new MockDatabase()
     database.write([{ ...mockDocuments[0], id: 'doc-preview-session', previewUrl: 'blob:http://localhost/temporario' }])

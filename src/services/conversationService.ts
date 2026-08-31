@@ -3,6 +3,7 @@ import type { ConversationRepository } from '../repositories/ConversationReposit
 import type { ConversationMessage, IntakeConversation, IntakeStep } from '../types/conversation'
 import { PersonService, personService } from './personService'
 import { DocumentService, documentService } from './documentService'
+import { DOCUMENT_CATEGORY_OPTIONS, type DocumentCategory, type DocumentRecord } from '../types/document'
 
 const nextStep: Record<Exclude<IntakeStep, 'document' | 'complete'>, IntakeStep> = {
   name: 'identifier',
@@ -38,6 +39,18 @@ function botPrompt(step: IntakeStep, name: string): string {
     complete: 'Informações recebidas. Seu pré-cadastro aguarda validação interna.',
   }
   return prompts[step]
+}
+
+function categoryLabel(category: DocumentCategory): string {
+  return DOCUMENT_CATEGORY_OPTIONS.find((option) => option.value === category)?.label ?? 'Documento'
+}
+
+function mockFileName(category: DocumentCategory, sequence: number): string {
+  const names: Record<DocumentCategory, string> = {
+    identity: 'identidade', proof_of_residence: 'comprovante_residencia', payslip: 'contracheque', bank_check: 'cheque',
+    work_card: 'carteira_trabalho', contract: 'contrato', medical_report: 'laudo', power_of_attorney: 'procuracao', other: 'documento',
+  }
+  return `${names[category]}_whatsapp_revisao${sequence > 1 ? `_${sequence}` : ''}_demo.pdf`
 }
 
 export class ConversationService {
@@ -93,7 +106,6 @@ export class ConversationService {
     const conversation = await this.getById(id)
     if (conversation.currentStep !== 'document') throw new Error('DOCUMENT_NOT_EXPECTED')
     await wait(this.delayMs)
-    const fileName = 'identidade_whatsapp_revisao_demo.pdf'
     const person = await this.people.createFromIntake({
       sourceReference: conversation.id,
       name: conversation.draft.name,
@@ -101,23 +113,27 @@ export class ConversationService {
       email: conversation.draft.email,
       documentCount: 0,
     })
+    const requestedCategory = conversation.requestedCategory ?? person.documentRequirements?.find((category) => !person.receivedDocuments?.includes(category)) ?? 'identity'
+    const sequence = (conversation.documentIds?.length ?? 0) + 1
+    const fileName = mockFileName(requestedCategory, sequence)
     const upload = await this.documents.uploadForPerson([{
       file: new File(['documento fictício'], fileName, { type: 'application/pdf', lastModified: 1 }),
       personId: person.id,
-      expectedCategory: 'identity',
+      expectedCategory: requestedCategory,
     }])
     const document = upload.created[0]
     if (!document) throw new Error('DUPLICATE_DOCUMENT')
     const processed = await this.documents.process(document.id)
 
     return this.repository.update(id, {
-      status: 'awaiting_internal_review',
+      status: conversation.approvedPersonId ? 'awaiting_document_review' : 'awaiting_internal_review',
       currentStep: 'complete',
       completion: 100,
-      draft: { ...conversation.draft, documents: [fileName] },
+      draft: { ...conversation.draft, documents: [...conversation.draft.documents, fileName] },
       provisionalPersonId: person.id,
-      documentIds: [processed.id],
-      messages: [...conversation.messages, createMessage('customer', `Documento enviado: ${fileName}`), createMessage('bot', 'Documento recebido e encaminhado automaticamente para a fila de conferência interna.')],
+      documentIds: [...(conversation.documentIds ?? []), processed.id],
+      requestedCategory,
+      messages: [...conversation.messages, createMessage('customer', `Documento enviado: ${fileName}`), createMessage('bot', `${categoryLabel(requestedCategory)} recebido e encaminhado automaticamente para a fila de conferência interna.`)],
       updatedAt: new Date().toISOString(),
     })
   }
@@ -161,6 +177,48 @@ export class ConversationService {
     await this.people.resetDemo()
     await this.documents.resetDemo()
     return this.repository.reset()
+  }
+
+  async registerDocumentOutcome(document: DocumentRecord, outcome: 'approved' | 'rejected'): Promise<IntakeConversation | null> {
+    const conversations = await this.repository.findAll()
+    const conversation = conversations.find((item) => item.documentIds?.includes(document.id) || (
+      document.personId && [item.approvedPersonId, item.provisionalPersonId].includes(document.personId)
+    ))
+    if (!conversation || !document.personId || !document.expectedCategory) return null
+
+    if (outcome === 'rejected') {
+      return this.repository.update(conversation.id, {
+        status: 'collecting_data',
+        currentStep: 'document',
+        completion: 80,
+        requestedCategory: document.expectedCategory,
+        messages: [...conversation.messages, createMessage('bot', `${categoryLabel(document.expectedCategory)} precisa ser reenviado. Motivo: ${document.rejectionReason ?? 'arquivo inadequado para conferência'}.`)],
+        updatedAt: new Date().toISOString(),
+      })
+    }
+
+    const person = (await this.people.list()).find((item) => item.id === document.personId)
+    if (!person) return conversation
+    const nextCategory = person.documentRequirements?.find((category) => !person.receivedDocuments?.includes(category))
+    if (!nextCategory) {
+      return this.repository.update(conversation.id, {
+        status: 'approved',
+        currentStep: 'complete',
+        completion: 100,
+        requestedCategory: undefined,
+        messages: [...conversation.messages, createMessage('bot', `${categoryLabel(document.expectedCategory)} aprovado. Todos os documentos necessários foram recebidos.`)],
+        updatedAt: new Date().toISOString(),
+      })
+    }
+
+    return this.repository.update(conversation.id, {
+      status: 'collecting_data',
+      currentStep: 'document',
+      completion: 80,
+      requestedCategory: nextCategory,
+      messages: [...conversation.messages, createMessage('bot', `${categoryLabel(document.expectedCategory)} aprovado. Agora envie: ${categoryLabel(nextCategory)}.`)],
+      updatedAt: new Date().toISOString(),
+    })
   }
 
   private async getById(id: string): Promise<IntakeConversation> {
