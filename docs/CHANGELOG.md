@@ -29,6 +29,8 @@
 - Central operacional no Dashboard com prioridades de documentos, atendimentos e pessoas.
 - Cadastro rápido de cliente dentro do envio, com requisitos próprios e seleção automática.
 - Atalho “Novo cliente” no Dashboard e prevenção local de duplicidade por identificação ou e-mail.
+- CPF restrito a 11 números no cadastro, WhatsApp simulado, Pessoas e Conferência.
+- RG limitado a 9 caracteres alfanuméricos, com mensagens acessíveis e validação também nos serviços.
 
 ### Decidido
 

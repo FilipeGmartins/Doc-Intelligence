@@ -80,7 +80,11 @@ em produção, deverá ser um evento assíncrono e idempotente.
 ```
 
 Códigos iniciais: `INVALID_FILE`, `DOCUMENT_NOT_FOUND`, `INVALID_STATUS_TRANSITION`,
-`PROCESSING_FAILED` e `DUPLICATE_DOCUMENT`.
+`PROCESSING_FAILED`, `DUPLICATE_DOCUMENT`, `INVALID_CPF` e `INVALID_RG`.
+
+CPF é recebido sem máscara, com exatamente 11 dígitos. RG é recebido sem
+pontuação, com até 9 caracteres alfanuméricos; letras são normalizadas para
+maiúsculas. A validação de dígito verificador permanece fora do mock atual.
 
 Paginação, idempotência, controle otimista e versionamento formal não estão
 implementados nesta fatia, mas deverão ser definidos antes de uma API de produção.

@@ -1179,3 +1179,18 @@ poderia fazer isso ?
 
 Contexto aplicado: criar um cliente manual na tela de envio, selecioná-lo
 automaticamente e manter no Dashboard apenas um atalho para esse fluxo.
+
+## Prompt 022 — Limites e validação de CPF/RG
+
+```text
+poderia fazer algumas validacoes de erros
+o deploy ja foi feito na vercel porem exixtem pontos a serem melhorados
+nos campos cpf e rg use uma logica apenas para permitir o numero maximo de caracteres de ambas
+em cpf nao permita que o usuario use letras e permita apenas que o usuario use 11 digitos por padrao
+```
+
+## Prompt 023 — Próximas melhorias
+
+```text
+mais alguma sujestao de melhoria ?
+```

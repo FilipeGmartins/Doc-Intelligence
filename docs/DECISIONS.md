@@ -218,3 +218,10 @@ autenticação e processamento assíncrono.
 - **Motivo:** evitar interrupção do recebimento quando a pessoa ainda não existe no sistema.
 - **Consequência:** o novo cadastro recebe origem `manual`, é selecionado automaticamente e seus espaços de arquivo aparecem imediatamente; o Dashboard oferece somente um atalho para esse mesmo fluxo.
 - **Proteção demonstrativa:** identificação e e-mail não podem repetir um cadastro local existente. Em produção, a verificação deverá ser transacional no backend.
+
+## ADR-022 — Normalização consistente de CPF e RG
+
+- **Decisão:** armazenar CPF somente com números e exigir exatamente 11 dígitos; limitar RG a 9 caracteres alfanuméricos em maiúsculas para preservar o verificador `X`.
+- **Aplicação:** a mesma regra roda na interface e novamente nos serviços de pessoa, conversa e documento.
+- **Motivo:** impedir valores acima do limite ou letras em CPF mesmo quando uma tela for contornada.
+- **Trade-off:** esta fatia valida formato e tamanho, mas ainda não calcula os dígitos verificadores do CPF. Essa deve ser a próxima evolução antes de dados reais.
