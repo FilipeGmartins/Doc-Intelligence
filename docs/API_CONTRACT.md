@@ -87,6 +87,12 @@ implementados nesta fatia, mas deverão ser definidos antes de uma API de produ�
 
 ## Pessoas
 
+### `POST /people`
+
+Cria um cliente manual com nome, identificação, e-mail e categorias documentais
+exigidas. Retorna `201` com `source: manual`. Uma identificação ou um e-mail já
+cadastrado deverá retornar `409` com `PERSON_ALREADY_EXISTS`.
+
 ### `GET /people`
 
 Aceita `query` e `status` como filtros opcionais. O status documental pode ser

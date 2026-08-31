@@ -211,3 +211,10 @@ autenticação e processamento assíncrono.
 - **Decisão:** consolidar documentos em conferência, atendimentos aguardando equipe e pessoas com pendências em atalhos operacionais.
 - **Motivo:** oferecer uma entrada diária baseada no trabalho a realizar, e não apenas em métricas históricas.
 - **Consequência:** os números são derivados dos mesmos repositórios locais usados pelas telas de destino e permanecem consistentes durante a sessão.
+
+## ADR-021 — Cadastro manual contextual ao envio
+
+- **Decisão:** permitir criar um cliente sem sair de “Enviar documentos”, com nome, identificação, e-mail e requisitos documentais iniciais.
+- **Motivo:** evitar interrupção do recebimento quando a pessoa ainda não existe no sistema.
+- **Consequência:** o novo cadastro recebe origem `manual`, é selecionado automaticamente e seus espaços de arquivo aparecem imediatamente; o Dashboard oferece somente um atalho para esse mesmo fluxo.
+- **Proteção demonstrativa:** identificação e e-mail não podem repetir um cadastro local existente. Em produção, a verificação deverá ser transacional no backend.

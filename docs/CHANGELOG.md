@@ -27,6 +27,8 @@
 - Recusa documental com motivo, status próprio e evento na trilha de auditoria.
 - Solicitação automática de reenvio ou do próximo documento pendente no WhatsApp simulado.
 - Central operacional no Dashboard com prioridades de documentos, atendimentos e pessoas.
+- Cadastro rápido de cliente dentro do envio, com requisitos próprios e seleção automática.
+- Atalho “Novo cliente” no Dashboard e prevenção local de duplicidade por identificação ou e-mail.
 
 ### Decidido
 

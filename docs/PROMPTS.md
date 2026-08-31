@@ -1170,3 +1170,12 @@ aplique as sugestoes que foram feitas
 
 Decisão aplicada: fechar o ciclo entre conferência e WhatsApp, permitir recusa com
 motivo e reenvio, e transformar o Dashboard em uma central de prioridades.
+
+## Prompt 021 — Cadastro rápido durante o envio
+
+```text
+poderia fazer isso ?
+```
+
+Contexto aplicado: criar um cliente manual na tela de envio, selecioná-lo
+automaticamente e manter no Dashboard apenas um atalho para esse fluxo.
