@@ -2,7 +2,7 @@ import { MockPersonRepository } from '../repositories/MockPersonRepository'
 import type { PersonRepository } from '../repositories/PersonRepository'
 import { DOCUMENT_CATEGORY_OPTIONS, type DocumentCategory } from '../types/document'
 import type { CreateManualPersonInput, CreatePersonFromIntakeInput, PersonListFilters, PersonRecord, UpdatePersonInput } from '../types/person'
-import { isCompleteCpf, sanitizeCpf } from '../utils/personalIdentifiers'
+import { isValidCpf, sanitizeCpf } from '../utils/personalIdentifiers'
 
 export interface PersonServiceContract {
   list(filters?: PersonListFilters): Promise<PersonRecord[]>
@@ -29,7 +29,7 @@ export class PersonService implements PersonServiceContract {
     if (!current) throw new Error('PERSON_NOT_FOUND')
 
     const identifier = sanitizeCpf(input.identifier)
-    if (!isCompleteCpf(identifier)) throw new Error('INVALID_CPF')
+    if (!isValidCpf(identifier)) throw new Error('INVALID_CPF')
 
     return this.repository.update(id, this.recalculate({
       ...current,
@@ -48,7 +48,7 @@ export class PersonService implements PersonServiceContract {
     if (existing) return existing
 
     const identifier = sanitizeCpf(input.identifier)
-    if (!isCompleteCpf(identifier)) throw new Error('INVALID_CPF')
+    if (!isValidCpf(identifier)) throw new Error('INVALID_CPF')
 
     return this.repository.create(this.recalculate({
       id: `person-whatsapp-${input.sourceReference}`,
@@ -71,7 +71,7 @@ export class PersonService implements PersonServiceContract {
     const identifier = sanitizeCpf(input.identifier)
     const email = input.email.trim()
     if (!name || !email) throw new Error('INVALID_PERSON')
-    if (!isCompleteCpf(identifier)) throw new Error('INVALID_CPF')
+    if (!isValidCpf(identifier)) throw new Error('INVALID_CPF')
 
     const normalizedIdentifier = identifier.toLocaleLowerCase('pt-BR')
     const normalizedEmail = email.toLocaleLowerCase('pt-BR')

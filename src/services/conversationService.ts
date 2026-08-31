@@ -4,7 +4,7 @@ import type { ConversationMessage, IntakeConversation, IntakeStep } from '../typ
 import { PersonService, personService } from './personService'
 import { DocumentService, documentService } from './documentService'
 import { DOCUMENT_CATEGORY_OPTIONS, type DocumentCategory, type DocumentRecord } from '../types/document'
-import { isCompleteCpf, sanitizeCpf } from '../utils/personalIdentifiers'
+import { isValidCpf, sanitizeCpf } from '../utils/personalIdentifiers'
 
 const nextStep: Record<Exclude<IntakeStep, 'document' | 'complete'>, IntakeStep> = {
   name: 'identifier',
@@ -80,7 +80,7 @@ export class ConversationService {
     const conversation = await this.getById(id)
     const text = conversation.currentStep === 'identifier' ? sanitizeCpf(value) : value.trim()
     if (!text) throw new Error('EMPTY_MESSAGE')
-    if (conversation.currentStep === 'identifier' && !isCompleteCpf(text)) throw new Error('INVALID_CPF')
+    if (conversation.currentStep === 'identifier' && !isValidCpf(text)) throw new Error('INVALID_CPF')
     if (conversation.currentStep === 'document' || conversation.currentStep === 'complete') throw new Error('TEXT_REPLY_NOT_ALLOWED')
     await wait(this.delayMs)
 

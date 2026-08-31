@@ -4,6 +4,16 @@ body { min-width: 320px; min-height: 100vh; margin: 0; background: #f5f7fb; tran
 button, input, textarea, select { font: inherit; }
 a { color: inherit; }
 .app-shell { min-height: 100vh; }
+.app-error-page { display: grid; min-height: 100vh; place-items: center; padding: 24px; background: radial-gradient(circle at 50% 0%, rgb(40 92 216 / 10%), transparent 28rem), #f5f7fb; }
+.app-error-card { width: min(500px, 100%); padding: 40px; border: 1px solid #e0e6ef; border-radius: 16px; background: #fff; box-shadow: 0 18px 55px rgb(24 39 75 / 10%); text-align: center; }
+.app-error-icon { display: grid; width: 52px; height: 52px; place-items: center; margin: 0 auto 18px; border-radius: 14px; color: #a4610b; background: #fff3dc; }
+.app-error-card h1 { margin: 6px 0 10px; color: #121d31; font-size: clamp(1.5rem, 4vw, 2rem); letter-spacing: -.035em; }
+.app-error-card > p:not(.eyebrow) { margin: 0 auto 24px; color: #748095; line-height: 1.6; }
+.app-error-card .primary-button { border: 0; margin: 0 auto; }
+html[data-theme='dark'] .app-error-page { background: radial-gradient(circle at 50% 0%, rgb(75 121 225 / 14%), transparent 28rem), #0d131d; }
+html[data-theme='dark'] .app-error-card { border-color: #293447; background: #141b27; }
+html[data-theme='dark'] .app-error-card h1 { color: #e5ebf5; }
+html[data-theme='dark'] .app-error-card > p:not(.eyebrow) { color: #8d9aae; }
 .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 20; display: flex; width: 246px; flex-direction: column; padding: 28px 18px 20px; border-right: 1px solid #e3e8f0; background: #fff; }
 .brand { display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 0 8px; color: #15213a; font-size: 1.08rem; letter-spacing: -.02em; }
 .brand-mark { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 11px; color: #fff; background: #285cd8; box-shadow: 0 6px 15px rgb(40 92 216 / 22%); }

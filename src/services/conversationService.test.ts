@@ -32,7 +32,7 @@ describe('ConversationService', () => {
 
   it('avança a coleta guiada até aguardar o documento', async () => {
     const id = 'intake-maria-demo'
-    expect((await conversations.reply(id, '55500000000')).currentStep).toBe('email')
+    expect((await conversations.reply(id, '71428793860')).currentStep).toBe('email')
     expect((await conversations.reply(id, 'maria@exemplo.test')).currentStep).toBe('address')
     const address = await conversations.reply(id, 'Rua Fictícia, 100 · Natal/RN')
 
@@ -57,7 +57,7 @@ describe('ConversationService', () => {
     const approvedAgain = await people.createFromIntake({
       sourceReference: 'intake-gabriel-review',
       name: 'Gabriel Martins',
-      identifier: '32100000009',
+      identifier: '39053344705',
       email: 'gabriel.martins@exemplo.test',
       documentCount: 1,
     })

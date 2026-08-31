@@ -11,7 +11,7 @@ describe('PersonService', () => {
 
   it('busca pessoas por nome, CPF ou e-mail', async () => {
     expect((await service.list({ query: 'mariana' })).map((person) => person.id)).toEqual(['person-mariana-costa'])
-    expect((await service.list({ query: '175' })).map((person) => person.id)).toEqual(['person-carlos-santos'])
+    expect((await service.list({ query: '111' })).map((person) => person.id)).toEqual(['person-carlos-santos'])
     expect((await service.list({ query: 'juliana.rocha' })).map((person) => person.id)).toEqual(['person-juliana-rocha'])
   })
 
@@ -24,7 +24,7 @@ describe('PersonService', () => {
   it('recalcula pendências ao editar documentos exigidos e recebidos', async () => {
     const updated = await service.update('person-roberto-alves', {
       name: 'Roberto Alves Nascimento',
-      identifier: '91400000065',
+      identifier: '98765432100',
       email: 'roberto.alves@exemplo.test',
       documentRequirements: ['identity', 'work_card', 'payslip', 'bank_check'],
       receivedDocuments: ['identity', 'work_card', 'payslip'],
@@ -36,7 +36,7 @@ describe('PersonService', () => {
   })
 
   it('cria uma pessoa provisória do WhatsApp sem duplicidade', async () => {
-    const input = { sourceReference: 'intake-01', name: 'Pessoa Teste', identifier: '00000000000', email: 'teste@exemplo.test', documentCount: 0 }
+    const input = { sourceReference: 'intake-01', name: 'Pessoa Teste', identifier: '71428793860', email: 'teste@exemplo.test', documentCount: 0 }
     const first = await service.createFromIntake(input)
     const second = await service.createFromIntake(input)
 
@@ -55,7 +55,7 @@ describe('PersonService', () => {
   it('cria um cliente manual com requisitos próprios', async () => {
     const created = await service.createManual({
       name: 'Cliente Demonstração',
-      identifier: '88800000088',
+      identifier: '71428793860',
       email: 'cliente.novo@exemplo.test',
       documentRequirements: ['identity', 'contract'],
     })
@@ -69,7 +69,7 @@ describe('PersonService', () => {
   it('impede duplicidade manual por identificação ou e-mail', async () => {
     await expect(service.createManual({
       name: 'Carlos duplicado',
-      identifier: '17500000042',
+      identifier: '11144477735',
       email: 'outro@exemplo.test',
       documentRequirements: ['identity'],
     })).rejects.toThrow('PERSON_ALREADY_EXISTS')

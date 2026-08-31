@@ -7,7 +7,7 @@ import { personService } from '../../services/personService'
 import { documentWorkflowService } from '../../services/documentWorkflowService'
 import { DOCUMENT_CATEGORY_OPTIONS, type DocumentCategory, type DocumentRecord, type ExtractedField } from '../../types/document'
 import type { PersonRecord } from '../../types/person'
-import { CPF_LENGTH, RG_MAX_LENGTH, isCompleteCpf, isCpfField, isRgField, isValidRg, sanitizeCpf, sanitizeRg } from '../../utils/personalIdentifiers'
+import { CPF_LENGTH, RG_MAX_LENGTH, cpfValidationMessage, isCpfField, isRgField, isValidCpf, isValidRg, sanitizeCpf, sanitizeRg } from '../../utils/personalIdentifiers'
 
 const eventDateFormatter = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
 
@@ -36,7 +36,7 @@ export function DocumentDetailsPage() {
   const linkedPerson = people.find((person) => person.id === personId)
   const categoryLabel = DOCUMENT_CATEGORY_OPTIONS.find((option) => option.value === category)?.label ?? 'Documento'
   const finalized = ['approved', 'rejected'].includes(document?.status ?? '')
-  const invalidIdentifiers = fields.some((field) => isCpfField(field.key, field.label) ? !isCompleteCpf(field.value) : isRgField(field.key, field.label) ? !isValidRg(field.value) : false)
+  const invalidIdentifiers = fields.some((field) => isCpfField(field.key, field.label) ? !isValidCpf(field.value) : isRgField(field.key, field.label) ? !isValidRg(field.value) : false)
 
   const save = async () => {
     if (!document) return
@@ -86,7 +86,7 @@ export function DocumentDetailsPage() {
           <div className="field-list">{fields.map((field) => {
             const cpfField = isCpfField(field.key, field.label)
             const rgField = isRgField(field.key, field.label)
-            const identifierError = cpfField && !isCompleteCpf(field.value) ? 'CPF deve conter exatamente 11 números.' : rgField && !isValidRg(field.value) ? 'RG deve conter no máximo 9 caracteres.' : null
+            const identifierError = cpfField ? cpfValidationMessage(field.value) : rgField && !isValidRg(field.value) ? 'RG deve conter no máximo 9 caracteres.' : null
             return <label className={`extracted-field ${field.confidence < .8 || identifierError ? 'extracted-field--warning' : ''}`} key={field.id}><span><strong>{field.label}{cpfField ? ` · ${field.value.length}/${CPF_LENGTH}` : rgField ? ` · ${field.value.length}/${RG_MAX_LENGTH}` : ''}</strong><small>{identifierError ?? `Confiança: ${Math.round(field.confidence * 100)}% ${field.confidence < .8 ? '· Revisar' : ''}`}</small></span><input disabled={finalized} inputMode={cpfField ? 'numeric' : undefined} maxLength={cpfField ? CPF_LENGTH : rgField ? RG_MAX_LENGTH : undefined} pattern={cpfField ? '[0-9]{11}' : rgField ? '[0-9A-Za-z]{1,9}' : undefined} aria-invalid={Boolean(identifierError)} value={field.value} onChange={(event) => setFields((current) => current.map((item) => item.id === field.id ? { ...item, value: cpfField ? sanitizeCpf(event.target.value) : rgField ? sanitizeRg(event.target.value) : event.target.value } : item))} />{(field.manuallyEdited || field.value !== document.extractedFields.find(({ id }) => id === field.id)?.value) && <em>Corrigido manualmente</em>}</label>
           })}</div>
           {showRejection && !finalized && <div className="rejection-form"><label><span>Motivo da recusa</span><textarea autoFocus value={rejectionReason} onChange={(event) => setRejectionReason(event.target.value)} placeholder="Ex.: imagem cortada ou dados ilegíveis" /></label><div><button className="secondary-button" type="button" onClick={() => setShowRejection(false)}>Cancelar</button><button className="danger-button" type="button" disabled={!rejectionReason.trim() || saving} onClick={() => void reject()}><XCircle size={16} />Confirmar e solicitar reenvio</button></div></div>}

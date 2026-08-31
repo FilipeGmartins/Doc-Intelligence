@@ -5,7 +5,7 @@ import { ConversationStatusBadge } from '../../components/conversations/Conversa
 import { useConversations } from '../../hooks/useConversations'
 import type { IntakeStep } from '../../types/conversation'
 import { DOCUMENT_CATEGORY_OPTIONS } from '../../types/document'
-import { CPF_LENGTH, isCompleteCpf, sanitizeCpf } from '../../utils/personalIdentifiers'
+import { CPF_LENGTH, cpfValidationMessage, isValidCpf, sanitizeCpf } from '../../utils/personalIdentifiers'
 
 const timeFormatter = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' })
 
@@ -41,7 +41,7 @@ export function WhatsAppPage() {
     approved: conversations.filter((item) => item.status === 'approved').length,
   }
   const requestedDocumentLabel = DOCUMENT_CATEGORY_OPTIONS.find((option) => option.value === selected?.requestedCategory)?.label ?? 'documento solicitado'
-  const cpfIncomplete = selected?.currentStep === 'identifier' && !isCompleteCpf(message)
+  const cpfIncomplete = selected?.currentStep === 'identifier' && !isValidCpf(message)
 
   const execute = async (operation: () => Promise<unknown>, success: string) => {
     setBusy(true)
@@ -60,8 +60,8 @@ export function WhatsAppPage() {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
     if (!selected || !message.trim()) return
-    if (selected.currentStep === 'identifier' && !isCompleteCpf(message)) {
-      setFeedback('O CPF deve conter exatamente 11 números.')
+    if (selected.currentStep === 'identifier' && !isValidCpf(message)) {
+      setFeedback(cpfValidationMessage(message) ?? 'CPF inválido.')
       return
     }
     void execute(() => reply(selected.id, message), 'Resposta registrada e pré-cadastro atualizado.')

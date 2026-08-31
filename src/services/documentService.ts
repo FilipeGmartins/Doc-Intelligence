@@ -11,7 +11,7 @@ import type {
   UpdateDocumentInput,
 } from '../types/document'
 import { getStatusFromConfidence } from '../utils/confidence'
-import { isCompleteCpf, isCpfField, isRgField, isValidRg, sanitizeCpf, sanitizeRg } from '../utils/personalIdentifiers'
+import { isCpfField, isRgField, isValidCpf, isValidRg, sanitizeCpf, sanitizeRg } from '../utils/personalIdentifiers'
 import type { AIProcessor } from './AIProcessor'
 import { MockAIService } from './mockAIService'
 import { PersonService, personService } from './personService'
@@ -59,7 +59,7 @@ function normalizeIdentifierFields(fields: ExtractedField[]): ExtractedField[] {
   const normalized = fields.map((field) => isCpfField(field.key, field.label)
     ? { ...field, value: sanitizeCpf(field.value) }
     : isRgField(field.key, field.label) ? { ...field, value: sanitizeRg(field.value) } : field)
-  if (normalized.some((field) => isCpfField(field.key, field.label) && !isCompleteCpf(field.value))) throw new Error('INVALID_CPF')
+  if (normalized.some((field) => isCpfField(field.key, field.label) && !isValidCpf(field.value))) throw new Error('INVALID_CPF')
   if (normalized.some((field) => isRgField(field.key, field.label) && !isValidRg(field.value))) throw new Error('INVALID_RG')
   return normalized
 }
