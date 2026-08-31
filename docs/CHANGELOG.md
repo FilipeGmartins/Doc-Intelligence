@@ -31,6 +31,10 @@
 - Atalho “Novo cliente” no Dashboard e prevenção local de duplicidade por identificação ou e-mail.
 - CPF restrito a 11 números no cadastro, WhatsApp simulado, Pessoas e Conferência.
 - RG limitado a 9 caracteres alfanuméricos, com mensagens acessíveis e validação também nos serviços.
+- Validação matemática dos dígitos do CPF e máscara restrita à apresentação.
+- Migração automática e versionada de pessoas, documentos e conversas persistidos localmente.
+- Tela global de recuperação para falhas inesperadas da interface.
+- Fallback de rotas diretas para a SPA na Vercel e roteiro automatizado de smoke test.
 
 ### Decidido
 

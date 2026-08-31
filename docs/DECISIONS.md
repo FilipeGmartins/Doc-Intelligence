@@ -224,4 +224,22 @@ autenticação e processamento assíncrono.
 - **Decisão:** armazenar CPF somente com números e exigir exatamente 11 dígitos; limitar RG a 9 caracteres alfanuméricos em maiúsculas para preservar o verificador `X`.
 - **Aplicação:** a mesma regra roda na interface e novamente nos serviços de pessoa, conversa e documento.
 - **Motivo:** impedir valores acima do limite ou letras em CPF mesmo quando uma tela for contornada.
-- **Trade-off:** esta fatia valida formato e tamanho, mas ainda não calcula os dígitos verificadores do CPF. Essa deve ser a próxima evolução antes de dados reais.
+- **Trade-off:** RG continua validado apenas por formato porque regras e comprimentos variam conforme o emissor e o estado.
+
+## ADR-023 — CPF canônico com validação matemática
+
+- **Decisão:** armazenar CPF sem máscara, validar os dois dígitos verificadores e aplicar a máscara apenas para leitura.
+- **Motivo:** comprimento correto não impede números digitados incorretamente; separar armazenamento e apresentação evita divergências entre telas e serviços.
+- **Consequência:** dados fictícios antigos que não passam no cálculo precisam ser migrados ou revisados.
+
+## ADR-024 — Migração versionada da persistência local
+
+- **Decisão:** mover pessoas, documentos e conversas das chaves `v1` para chaves `v2` ao primeiro acesso, com normalização determinística.
+- **Motivo:** uma atualização da demonstração não deve quebrar silenciosamente dados já presentes no navegador.
+- **Consequência:** cadastros manuais inválidos são marcados para revisão, conversas retornam à coleta do CPF e correções de documentos entram na trilha de eventos.
+
+## ADR-025 — Recuperação de interface e rotas diretas
+
+- **Decisão:** envolver a aplicação em um limite global de erro e configurar a reescrita das rotas da SPA para `index.html` na Vercel.
+- **Motivo:** uma falha de renderização deve oferecer recuperação clara, e links diretos como `/people` precisam continuar funcionando após o deploy.
+- **Limite:** o limite de erro não substitui observabilidade; proteção de acesso deve ser habilitada na hospedagem ou em uma futura camada de autenticação.

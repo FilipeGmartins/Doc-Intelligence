@@ -1194,3 +1194,14 @@ em cpf nao permita que o usuario use letras e permita apenas que o usuario use 1
 ```text
 mais alguma sujestao de melhoria ?
 ```
+
+## Prompt 024 — Aplicar melhorias de robustez
+
+```text
+aplique as mudancas
+```
+
+Decisão aplicada: validar os dígitos do CPF, mascarar apenas a apresentação,
+migrar dados locais antigos, oferecer recuperação para falhas inesperadas e
+configurar o fallback de rotas da SPA na Vercel. A proteção real permanece uma
+configuração da plataforma de hospedagem.

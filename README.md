@@ -51,6 +51,7 @@ npm test
 - [Pontos de extensão](docs/INTEGRATION_ROADMAP.md)
 - [Registro de tempo](docs/TIME_LOG.md)
 - [Carta de encerramento](docs/CARTA_ENCERRAMENTO_DOC_INTELLIGENCE.docx)
+- [Checklist de implantação](docs/DEPLOY_CHECKLIST.md)
 
 Todos os dados funcionais usados no projeto serão fictícios.
 
@@ -60,9 +61,14 @@ Na tela de envio, “Novo cliente” abre um cadastro manual rápido. Depois de 
 o cliente já fica selecionado e seus requisitos documentais liberam os espaços de
 arquivo, sem interromper o atendimento. O Dashboard mantém um atalho para o mesmo fluxo.
 
-Os campos de CPF aceitam somente 11 números. Na conferência documental, RG aceita
+Os campos de CPF aceitam somente 11 números e validam seus dígitos verificadores;
+a máscara aparece apenas durante a leitura. Na conferência documental, RG aceita
 até 9 caracteres alfanuméricos, incluindo o verificador `X`. Essas regras também
 são verificadas pelos serviços mockados, não apenas pelos componentes visuais.
+
+Dados locais criados por versões anteriores são migrados automaticamente para o
+formato atual. O arquivo `vercel.json` mantém as rotas internas acessíveis quando
+um endereço é aberto diretamente no deploy.
 
 A automação demonstrativa de WhatsApp reutiliza o mesmo fluxo documental: cria um cadastro provisório, envia o arquivo para a Conferência e só marca o documento como recebido em Pessoas depois da aprovação humana. Nenhuma mensagem externa ou informação real é utilizada.
 

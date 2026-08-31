@@ -84,7 +84,8 @@ Códigos iniciais: `INVALID_FILE`, `DOCUMENT_NOT_FOUND`, `INVALID_STATUS_TRANSIT
 
 CPF é recebido sem máscara, com exatamente 11 dígitos. RG é recebido sem
 pontuação, com até 9 caracteres alfanuméricos; letras são normalizadas para
-maiúsculas. A validação de dígito verificador permanece fora do mock atual.
+maiúsculas. O mock atual também valida os dois dígitos verificadores do CPF;
+a máscara é responsabilidade exclusiva da apresentação.
 
 Paginação, idempotência, controle otimista e versionamento formal não estão
 implementados nesta fatia, mas deverão ser definidos antes de uma API de produção.
