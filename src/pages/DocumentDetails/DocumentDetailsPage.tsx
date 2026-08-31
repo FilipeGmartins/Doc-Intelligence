@@ -1,9 +1,11 @@
-import { AlertTriangle, ArrowLeft, Check, FileText, Save } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Check, FileText, History, Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { DocumentStatusBadge } from '../../components/documents/DocumentStatusBadge'
 import { documentService } from '../../services/documentService'
 import type { DocumentRecord, ExtractedField } from '../../types/document'
+
+const eventDateFormatter = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
 
 export function DocumentDetailsPage() {
   const { id = '' } = useParams()
@@ -52,6 +54,10 @@ export function DocumentDetailsPage() {
           {document.status !== 'approved' && <div className="form-actions"><button className="secondary-button action-save" type="button" disabled={!dirty || saving} onClick={() => void save()}><Save size={17} />{saving ? 'Salvando...' : 'Salvar alterações'}</button><button className="primary-button primary-button--button" type="button" disabled={dirty || saving} title={dirty ? 'Salve as alterações antes de aprovar' : undefined} onClick={() => void approve()}><Check size={18} />Aprovar documento</button></div>}
         </section>
       </div>
+      <section className="panel audit-panel">
+        <div className="panel-heading"><div><h2>Histórico do documento</h2><p>Registro demonstrativo das principais ações e decisões.</p></div><History size={20} aria-hidden="true" /></div>
+        {document.events.length ? <ol className="audit-timeline">{[...document.events].reverse().map((event) => <li key={event.id}><span className={`audit-dot audit-dot--${event.type}`} /><div><strong>{event.description}</strong><small>{event.actor} · {eventDateFormatter.format(new Date(event.createdAt))}</small></div></li>)}</ol> : <div className="state-message audit-empty">Nenhum evento registrado para este documento legado.</div>}
+      </section>
     </div>
   )
 }

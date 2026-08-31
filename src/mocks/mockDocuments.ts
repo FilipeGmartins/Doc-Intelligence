@@ -17,6 +17,12 @@ export const mockDocuments: DocumentRecord[] = [
     ],
     createdAt: '2026-08-30T13:15:00.000Z',
     updatedAt: '2026-08-30T13:15:00.000Z',
+    personId: 'person-carlos-santos',
+    expectedCategory: 'identity',
+    events: [
+      { id: 'event-identidade-upload', type: 'uploaded', description: 'Documento recebido para Carlos Eduardo Santos.', actor: 'Ana Souza', createdAt: '2026-08-30T13:15:00.000Z' },
+      { id: 'event-identidade-review', type: 'review_required', description: 'Baixa confiança detectada; conferência humana solicitada.', actor: 'Processamento simulado', createdAt: '2026-08-30T13:15:04.000Z' },
+    ],
   },
   {
     id: 'doc-comprovante-ficticio',
@@ -35,6 +41,12 @@ export const mockDocuments: DocumentRecord[] = [
     ],
     createdAt: '2026-08-30T12:40:00.000Z',
     updatedAt: '2026-08-30T12:40:00.000Z',
+    personId: 'person-ana-lima',
+    expectedCategory: 'proof_of_residence',
+    events: [
+      { id: 'event-comprovante-upload', type: 'uploaded', description: 'Documento recebido para Ana Paula Lima.', actor: 'Ana Souza', createdAt: '2026-08-30T12:40:00.000Z' },
+      { id: 'event-comprovante-processed', type: 'processed', description: 'Documento classificado e extraído com alta confiança.', actor: 'Processamento simulado', createdAt: '2026-08-30T12:40:03.000Z' },
+    ],
   },
   {
     id: 'doc-falha-ficticia',
@@ -49,5 +61,11 @@ export const mockDocuments: DocumentRecord[] = [
     processingError: 'Não foi possível processar este documento.',
     createdAt: '2026-08-30T11:55:00.000Z',
     updatedAt: '2026-08-30T11:55:04.000Z',
+    personId: 'person-mariana-costa',
+    expectedCategory: 'contract',
+    events: [
+      { id: 'event-falha-upload', type: 'uploaded', description: 'Documento recebido para Mariana Ferreira Costa.', actor: 'Ana Souza', createdAt: '2026-08-30T11:55:00.000Z' },
+      { id: 'event-falha-processing', type: 'failed', description: 'Falha simulada durante o processamento.', actor: 'Processamento simulado', createdAt: '2026-08-30T11:55:04.000Z' },
+    ],
   },
 ]

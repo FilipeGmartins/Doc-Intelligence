@@ -1,16 +1,22 @@
 import { MockDocumentRepository } from '../repositories/MockDocumentRepository'
 import type { DocumentRepository } from '../repositories/DocumentRepository'
 import type {
+  DocumentEvent,
+  DocumentEventType,
   DocumentListFilters,
   DocumentRecord,
+  DocumentUploadInput,
+  DocumentUploadResult,
   ExtractedField,
   UpdateDocumentInput,
 } from '../types/document'
 import { getStatusFromConfidence } from '../utils/confidence'
+import type { AIProcessor } from './AIProcessor'
 import { MockAIService } from './mockAIService'
 
 export interface DocumentServiceContract {
   upload(files: File[]): Promise<DocumentRecord[]>
+  uploadForPerson(inputs: DocumentUploadInput[]): Promise<DocumentUploadResult>
   list(filters?: DocumentListFilters): Promise<DocumentRecord[]>
   getById(id: string): Promise<DocumentRecord>
   update(id: string, changes: UpdateDocumentInput): Promise<DocumentRecord>
@@ -21,6 +27,15 @@ export interface DocumentServiceContract {
 
 function createId(): string {
   return globalThis.crypto?.randomUUID?.() ?? `doc-${Date.now()}`
+}
+
+function createEvent(type: DocumentEventType, description: string, actor = 'Sistema'): DocumentEvent {
+  return { id: createId(), type, description, actor, createdAt: new Date().toISOString() }
+}
+
+function fileFingerprint(input: DocumentUploadInput): string {
+  const person = input.personId ?? 'unassigned'
+  return `${person}:${input.file.name.toLocaleLowerCase('pt-BR')}:${input.file.size}:${input.file.lastModified}`
 }
 
 function markEditedFields(
@@ -38,19 +53,42 @@ function markEditedFields(
 
 export class DocumentService implements DocumentServiceContract {
   private readonly repository: DocumentRepository
-  private readonly aiService: MockAIService
+  private readonly aiService: AIProcessor
 
   constructor(
     repository: DocumentRepository,
-    aiService: MockAIService,
+    aiService: AIProcessor,
   ) {
     this.repository = repository
     this.aiService = aiService
   }
 
   async upload(files: File[]): Promise<DocumentRecord[]> {
+    const result = await this.uploadForPerson(files.map((file) => ({ file })))
+    return result.created
+  }
+
+  async uploadForPerson(inputs: DocumentUploadInput[]): Promise<DocumentUploadResult> {
     const now = new Date().toISOString()
-    const documents = files.map<DocumentRecord>((file) => ({
+    const existing = await this.repository.findAll()
+    const seenFingerprints = new Set<string>()
+    const duplicates: DocumentUploadResult['duplicates'] = []
+    const uniqueInputs = inputs.filter((input) => {
+      const fingerprint = fileFingerprint(input)
+      const duplicate = existing.find((document) => document.fingerprint === fingerprint || (
+        document.personId === input.personId &&
+        document.originalFileName.toLocaleLowerCase('pt-BR') === input.file.name.toLocaleLowerCase('pt-BR') &&
+        document.sizeInBytes === input.file.size
+      ))
+      if (!duplicate && !seenFingerprints.has(fingerprint)) {
+        seenFingerprints.add(fingerprint)
+        return true
+      }
+      duplicates.push({ fileName: input.file.name, existingDocumentId: duplicate?.id ?? 'same-batch' })
+      return false
+    })
+
+    const documents = uniqueInputs.map<DocumentRecord>(({ file, personId, expectedCategory }) => ({
       id: createId(),
       originalFileName: file.name,
       suggestedFileName: '',
@@ -63,9 +101,13 @@ export class DocumentService implements DocumentServiceContract {
       createdAt: now,
       updatedAt: now,
       previewUrl: typeof URL.createObjectURL === 'function' ? URL.createObjectURL(file) : undefined,
+      personId,
+      expectedCategory,
+      fingerprint: fileFingerprint({ file, personId, expectedCategory }),
+      events: [createEvent('uploaded', personId ? 'Documento recebido e vinculado ao cliente.' : 'Documento recebido sem cliente vinculado.', 'Ana Souza')],
     }))
 
-    return this.repository.createMany(documents)
+    return { created: await this.repository.createMany(documents), duplicates }
   }
 
   list(filters?: DocumentListFilters): Promise<DocumentRecord[]> {
@@ -84,9 +126,11 @@ export class DocumentService implements DocumentServiceContract {
       ? markEditedFields(current.extractedFields, changes.extractedFields)
       : undefined
 
+    const manuallyEdited = Boolean(extractedFields?.some((field) => field.manuallyEdited && !current.extractedFields.find((item) => item.id === field.id)?.manuallyEdited))
     return this.repository.update(id, {
       ...changes,
       ...(extractedFields ? { extractedFields } : {}),
+      ...(manuallyEdited ? { events: [...current.events, createEvent('manually_edited', 'Campos extraídos foram corrigidos manualmente.', 'Ana Souza')] } : {}),
       updatedAt: new Date().toISOString(),
     })
   }
@@ -96,22 +140,28 @@ export class DocumentService implements DocumentServiceContract {
     await this.repository.update(id, {
       status: 'processing',
       processingError: undefined,
+      events: [...current.events, createEvent('processing_started', 'Processamento simulado iniciado.', 'Processamento simulado')],
       updatedAt: new Date().toISOString(),
     })
 
     try {
-      const result = await this.aiService.process(current.originalFileName)
+      const processing = await this.getById(id)
+      const result = await this.aiService.process(current.originalFileName, current.expectedCategory)
+      const status = getStatusFromConfidence(result.confidence)
       return this.repository.update(id, {
         ...result,
-        status: getStatusFromConfidence(result.confidence),
+        status,
         processingError: undefined,
+        events: [...processing.events, createEvent(status === 'review_required' ? 'review_required' : 'processed', status === 'review_required' ? 'Baixa confiança detectada; conferência humana solicitada.' : 'Documento classificado e extraído com alta confiança.', 'Processamento simulado')],
         updatedAt: new Date().toISOString(),
       })
     } catch {
+      const processing = await this.getById(id)
       return this.repository.update(id, {
         status: 'failed',
         confidence: null,
         processingError: 'Não foi possível processar este documento.',
+        events: [...processing.events, createEvent('failed', 'Falha simulada durante o processamento.', 'Processamento simulado')],
         updatedAt: new Date().toISOString(),
       })
     }
@@ -135,6 +185,7 @@ export class DocumentService implements DocumentServiceContract {
     return this.repository.update(id, {
       status: 'approved',
       approvedAt: now,
+      events: [...document.events, createEvent('approved', 'Documento conferido e aprovado.', 'Ana Souza')],
       updatedAt: now,
     })
   }

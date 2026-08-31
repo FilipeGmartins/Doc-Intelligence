@@ -33,6 +33,7 @@ describe('DocumentService', () => {
 
     const updated = await service.update(document.id, { extractedFields: editedFields })
     expect(updated.extractedFields.find((field) => field.key === 'cpf')?.manuallyEdited).toBe(true)
+    expect(updated.events.at(-1)?.type).toBe('manually_edited')
   })
 
   it('registra falha e permite tentar novamente', async () => {
@@ -54,5 +55,38 @@ describe('DocumentService', () => {
     expect(byName.map((document) => document.id)).toEqual(['doc-comprovante-ficticio'])
     expect(byType.map((document) => document.id)).toEqual(['doc-identidade-ficticia'])
     expect(failed.map((document) => document.id)).toEqual(['doc-falha-ficticia'])
+  })
+
+  it('processa contracheque conforme o tipo esperado pelo atendimento', async () => {
+    const result = await service.uploadForPerson([{
+      file: new File(['fictício'], 'arquivo_cliente.pdf', { type: 'application/pdf', lastModified: 1 }),
+      personId: 'person-carlos-santos',
+      expectedCategory: 'payslip',
+    }])
+    const processed = await service.process(result.created[0].id)
+
+    expect(processed.documentType).toBe('Contracheque')
+    expect(processed.extractedFields.map((field) => field.key)).toContain('netAmount')
+    expect(processed.events.map((event) => event.type)).toEqual(['uploaded', 'processing_started', 'processed'])
+  })
+
+  it('identifica reenvio duplicado para o mesmo cliente', async () => {
+    const input = {
+      file: new File(['fictício'], 'identidade_nova.pdf', { type: 'application/pdf', lastModified: 1 }),
+      personId: 'person-carlos-santos',
+      expectedCategory: 'identity' as const,
+    }
+    const first = await service.uploadForPerson([input])
+    const second = await service.uploadForPerson([input])
+
+    expect(first.created).toHaveLength(1)
+    expect(second.created).toHaveLength(0)
+    expect(second.duplicates[0].existingDocumentId).toBe(first.created[0].id)
+  })
+
+  it('registra aprovação na trilha de auditoria', async () => {
+    const approved = await service.approve('doc-identidade-ficticia')
+    expect(approved.events.at(-1)?.type).toBe('approved')
+    expect(approved.events.at(-1)?.actor).toBe('Ana Souza')
   })
 })

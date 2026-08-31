@@ -16,7 +16,7 @@ export class MockDatabase {
     try {
       const parsed: unknown = JSON.parse(stored)
       if (!Array.isArray(parsed)) throw new Error('Invalid mock database')
-      return parsed as DocumentRecord[]
+      return (parsed as DocumentRecord[]).map((document) => ({ ...document, events: document.events ?? [] }))
     } catch {
       return this.reset()
     }
