@@ -11,6 +11,7 @@ export const mockPeople: PersonRecord[] = [
     missingDocuments: [],
     updatedAt: '2026-08-30T14:20:00.000Z',
     documentRequirements: ['identity', 'proof_of_residence'],
+    receivedDocuments: ['identity', 'proof_of_residence'],
   },
   {
     id: 'person-carlos-santos',
@@ -22,6 +23,7 @@ export const mockPeople: PersonRecord[] = [
     missingDocuments: ['Comprovante de residência', 'Contracheque'],
     updatedAt: '2026-08-29T16:45:00.000Z',
     documentRequirements: ['identity', 'proof_of_residence', 'payslip'],
+    receivedDocuments: ['identity'],
   },
   {
     id: 'person-mariana-costa',
@@ -34,6 +36,7 @@ export const mockPeople: PersonRecord[] = [
     updateReason: 'Documento de identidade vencido',
     updatedAt: '2026-08-12T10:10:00.000Z',
     documentRequirements: ['identity', 'proof_of_residence', 'contract'],
+    receivedDocuments: ['identity', 'proof_of_residence', 'contract'],
   },
   {
     id: 'person-roberto-alves',
@@ -45,6 +48,7 @@ export const mockPeople: PersonRecord[] = [
     missingDocuments: [],
     updatedAt: '2026-08-30T09:35:00.000Z',
     documentRequirements: ['identity', 'work_card', 'payslip'],
+    receivedDocuments: ['identity', 'work_card', 'payslip'],
   },
   {
     id: 'person-juliana-rocha',
@@ -56,6 +60,7 @@ export const mockPeople: PersonRecord[] = [
     missingDocuments: ['Procuração'],
     updatedAt: '2026-08-28T11:55:00.000Z',
     documentRequirements: ['identity', 'proof_of_residence', 'power_of_attorney'],
+    receivedDocuments: ['identity', 'proof_of_residence'],
   },
   {
     id: 'person-lucas-barbosa',
@@ -68,5 +73,6 @@ export const mockPeople: PersonRecord[] = [
     updateReason: 'Comprovante de residência com mais de 90 dias',
     updatedAt: '2026-07-22T15:30:00.000Z',
     documentRequirements: ['identity', 'proof_of_residence', 'medical_report'],
+    receivedDocuments: ['identity', 'proof_of_residence', 'medical_report'],
   },
 ]

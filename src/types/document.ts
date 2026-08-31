@@ -10,6 +10,7 @@ export type DocumentCategory =
   | 'identity'
   | 'proof_of_residence'
   | 'payslip'
+  | 'bank_check'
   | 'work_card'
   | 'contract'
   | 'medical_report'
@@ -101,6 +102,7 @@ export const DOCUMENT_CATEGORY_OPTIONS: Array<{ value: DocumentCategory; label: 
   { value: 'identity', label: 'Documento de identidade', description: 'RG, CNH ou documento equivalente' },
   { value: 'proof_of_residence', label: 'Comprovante de residência', description: 'Conta ou correspondência recente' },
   { value: 'payslip', label: 'Contracheque', description: 'Comprovante de renda mensal' },
+  { value: 'bank_check', label: 'Cheque', description: 'Cheque bancário recebido do cliente' },
   { value: 'work_card', label: 'Carteira de trabalho', description: 'Carteira física ou digital' },
   { value: 'contract', label: 'Contrato', description: 'Contrato assinado pelas partes' },
   { value: 'medical_report', label: 'Laudo', description: 'Laudo ou relatório técnico' },

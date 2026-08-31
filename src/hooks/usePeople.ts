@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { personService } from '../services/personService'
 import type { PersonListFilters, PersonRecord } from '../types/person'
+import type { UpdatePersonInput } from '../types/person'
 
 export function usePeople(filters: PersonListFilters = {}) {
   const [people, setPeople] = useState<PersonRecord[]>([])
@@ -34,5 +35,6 @@ export function usePeople(filters: PersonListFilters = {}) {
     loading,
     error,
     reload: () => setReloadVersion((version) => version + 1),
+    update: (id: string, input: UpdatePersonInput) => personService.update(id, input),
   }
 }

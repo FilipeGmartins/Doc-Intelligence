@@ -18,6 +18,7 @@ function field(id: string, key: string, label: string, value: string, confidence
 function inferCategory(fileName: string): DocumentCategory {
   const normalized = fileName.toLocaleLowerCase('pt-BR')
   if (normalized.includes('contracheque') || normalized.includes('holerite')) return 'payslip'
+  if (normalized.includes('cheque')) return 'bank_check'
   if (normalized.includes('carteira') || normalized.includes('ctps')) return 'work_card'
   if (normalized.includes('contrato')) return 'contract'
   if (normalized.includes('identidade') || normalized.includes('cnh') || normalized.includes('rg')) return 'identity'
@@ -49,6 +50,14 @@ function createTemplate(category: DocumentCategory): AIProcessingResult {
         field('employeeName', 'employeeName', 'Funcionário', 'Carlos Eduardo Santos', 0.96), field('employer', 'employer', 'Empregador', 'Empresa Demonstração Ltda.', 0.91),
         field('referenceMonth', 'referenceMonth', 'Competência', '08/2026', 0.94), field('grossAmount', 'grossAmount', 'Valor bruto', 'R$ 4.850,00', 0.87),
         field('netAmount', 'netAmount', 'Valor líquido', 'R$ 3.912,40', 0.84),
+      ],
+    },
+    bank_check: {
+      documentType: 'Cheque', suggestedFileName: 'CHEQUE_CLIENTE_2026-08.pdf', confidence: 0.88,
+      extractedFields: [
+        field('holder', 'holder', 'Emitente', 'Pessoa Fictícia', 0.91), field('bank', 'bank', 'Banco', 'Banco Demonstração', 0.89),
+        field('checkNumber', 'checkNumber', 'Número do cheque', '000001', 0.86), field('amount', 'amount', 'Valor', 'R$ 1.250,00', 0.84),
+        field('issueDate', 'issueDate', 'Data', '31/08/2026', 0.90),
       ],
     },
     work_card: {

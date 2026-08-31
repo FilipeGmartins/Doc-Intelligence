@@ -13,6 +13,16 @@ export interface PersonRecord {
   updateReason?: string
   updatedAt: string
   documentRequirements?: DocumentCategory[]
+  receivedDocuments?: DocumentCategory[]
+}
+
+export interface UpdatePersonInput {
+  name: string
+  identifier: string
+  email: string
+  documentRequirements: DocumentCategory[]
+  receivedDocuments: DocumentCategory[]
+  updateReason?: string
 }
 
 export interface PersonListFilters {
