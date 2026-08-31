@@ -8,7 +8,9 @@ determinística.
 
 A fatia vertical está funcional: Dashboard, upload múltiplo, processamento
 simulado, fila de conferência, edição, aprovação e consulta pesquisável de
-documentos. A persistência local fica isolada atrás do contrato de repositório.
+documentos. A aplicação também oferece tema claro/escuro e uma visão consolidada
+da situação documental das pessoas cadastradas. A persistência local fica isolada
+atrás do contrato de repositório.
 
 ## Requisitos
 

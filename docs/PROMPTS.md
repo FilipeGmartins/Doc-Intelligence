@@ -1081,3 +1081,24 @@ vamos continuar onde paramos hj
 ```text
 faca isso
 ```
+
+## Prompt 010 — Evolução visual, tema escuro e situação das pessoas
+
+```text
+ele esta um pouco generico
+quais melhorias vc aconselha sem mudar a identidade do projeto
+gostaria de tambem incluir um tema escuro ou algo que deixe mais agradavel para o usuario que passa muito tempo olhando para tela
+tambem gostaria que fosse incluida a opcao de olhar todas as pessoas cadastradas no sistema indicando se tem alguem pendente de algum documento, se precisa de uma nova atualizacao, se todos os documentos estao corretos
+podemos fazer isso ultilizando os icones que ja estao sendo usados no projeto
+```
+
+## Prompt 011 — Publicação da branch e proposta de atendimento por WhatsApp
+
+```text
+suba essas alteracoes na nova branch
+estou pensando se existe uma forma de eu criar uma automacao simulada
+eu pensei da seguinte forma
+existiria uma especie de automacao onde o cliente poderia ir falando por whatsapp (Teria que ser criado um botao para o whatsapp)e apartir dessa conversa ele tambem poderia ir passando as informações pra ja ir acelerando o processo de cadastro
+e a partir do botao whatsapp que teria no sistema mostraria as pessoas que criaram o primeiro contato por cadastro e estao esperando a parte interna da empresa validar e finalizar as informacoes
+acha que isso é possivel e se possivel como poderia implementar e simular (de forma mockada) essa ideia
+```

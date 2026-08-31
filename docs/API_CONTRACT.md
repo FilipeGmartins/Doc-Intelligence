@@ -73,3 +73,13 @@ e `PROCESSING_FAILED`.
 
 Paginação, idempotência, controle otimista e versionamento formal não estão
 implementados nesta fatia, mas deverão ser definidos antes de uma API de produção.
+
+## Pessoas
+
+### `GET /people`
+
+Aceita `query` e `status` como filtros opcionais. O status documental pode ser
+`complete`, `pending_document` ou `update_required`. Retorna dados cadastrais
+resumidos, quantidade de documentos, pendências e data da última atualização.
+
+Detalhe e edição de pessoas não fazem parte desta fatia.

@@ -103,3 +103,28 @@ deixa o fluxo compreensível e cria um ponto claro para auditoria.
 
 **Trade-offs:** acrescenta uma ação ao fluxo e exige diferenciar rascunho salvo de
 documento finalizado.
+
+## ADR-010 — Tema escuro como preferência local
+
+**Decisão:** oferecer temas claro e escuro, iniciar pela preferência do sistema e
+salvar a escolha no navegador.
+
+**Alternativas:** manter somente o tema claro ou salvar a preferência no backend.
+
+**Motivo:** reduzir desconforto em uso prolongado sem exigir conta ou integração.
+
+**Trade-offs:** a escolha não acompanha o funcionário entre dispositivos.
+
+## ADR-011 — Situação documental consolidada por pessoa
+
+**Decisão:** apresentar uma lista mockada de pessoas com três situações simples:
+correta, documento pendente e atualização necessária.
+
+**Alternativas:** inferir a situação apenas na tela de documentos ou implementar
+cadastro completo de pessoas.
+
+**Motivo:** permitir priorização operacional sem ampliar a fatia para um módulo de
+CRM ou cadastro completo.
+
+**Trade-offs:** vínculos pessoa-documento ainda são demonstrativos e não podem ser
+editados nesta versão.

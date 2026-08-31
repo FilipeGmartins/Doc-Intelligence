@@ -15,6 +15,9 @@
 - Upload múltiplo com validação, drag and drop e processamento simulado.
 - Fila de conferência e formulário provisório com salvamento e aprovação separados.
 - Listagem de documentos com busca, filtro de status e acesso ao detalhe.
+- Tema escuro persistente, com preferência inicial baseada no sistema operacional.
+- Visão de pessoas com busca, filtros e indicadores de conformidade documental.
+- Refinamentos de identidade na navegação, títulos e superfícies da aplicação.
 - Documentação de arquitetura, decisões, API e uso de IA.
 
 ### Decidido

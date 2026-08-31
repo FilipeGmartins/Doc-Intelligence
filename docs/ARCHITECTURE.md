@@ -5,6 +5,8 @@
 O DOC Intelligence é uma aplicação React para funcionários enviarem documentos,
 acompanharem um processamento simulado, revisarem extrações com baixa confiança e
 aprovarem o resultado.
+O produto também apresenta a situação documental das pessoas cadastradas por meio
+de um serviço mockado independente.
 
 ## Fluxo de dados
 
@@ -34,6 +36,16 @@ DocumentService -> MockAIService -> resultado fictício determinístico
 - **MockAIService:** atraso e resultados fictícios reproduzíveis.
 
 Componentes não acessam diretamente `localStorage`, mocks ou Supabase.
+
+O catálogo demonstrativo de pessoas segue um contrato próprio:
+
+```text
+PeoplePage -> usePeople -> PersonService -> mockPeople
+```
+
+O tema é estado de interface compartilhado por `ThemeProvider`. A preferência é
+o único dado visual persistido diretamente no navegador, pois não representa dado
+de negócio e deve permanecer específico do dispositivo.
 
 ## Substituição futura
 
@@ -76,7 +88,7 @@ DocumentService
 ```
 
 Uma estrutura relacional mínima teria `documents`, `extracted_fields` e,
-posteriormente, `document_events` para auditoria. Arquivos ficariam em storage
+posteriormente, `people`, `person_documents` e `document_events` para auditoria. Arquivos ficariam em storage
 privado, nunca dentro das tabelas nem no `localStorage`.
 
 ## Limitações reconhecidas
