@@ -45,4 +45,14 @@ describe('DocumentService', () => {
     expect(failed.processingError).toBe('Não foi possível processar este documento.')
     expect((await service.reprocess(uploaded.id)).status).toBe('failed')
   })
+
+  it('busca documentos por nome ou tipo e filtra por status', async () => {
+    const byName = await service.list({ query: 'maria' })
+    const byType = await service.list({ query: 'identidade' })
+    const failed = await service.list({ status: 'failed' })
+
+    expect(byName.map((document) => document.id)).toEqual(['doc-comprovante-ficticio'])
+    expect(byType.map((document) => document.id)).toEqual(['doc-identidade-ficticia'])
+    expect(failed.map((document) => document.id)).toEqual(['doc-falha-ficticia'])
+  })
 })

@@ -14,6 +14,7 @@
 - Layout responsivo, navegação e Dashboard conectado ao serviço.
 - Upload múltiplo com validação, drag and drop e processamento simulado.
 - Fila de conferência e formulário provisório com salvamento e aprovação separados.
+- Listagem de documentos com busca, filtro de status e acesso ao detalhe.
 - Documentação de arquitetura, decisões, API e uso de IA.
 
 ### Decidido

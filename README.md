@@ -6,9 +6,9 @@ determinística.
 
 ## Estado atual
 
-A fundação React + TypeScript + Vite, o Dashboard e o fluxo de upload/processamento
-simulado estão configurados. Conferência, edição e aprovação serão implementadas
-incrementalmente.
+A fatia vertical está funcional: Dashboard, upload múltiplo, processamento
+simulado, fila de conferência, edição, aprovação e consulta pesquisável de
+documentos. A persistência local fica isolada atrás do contrato de repositório.
 
 ## Requisitos
 
