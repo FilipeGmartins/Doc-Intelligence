@@ -198,3 +198,16 @@ autenticação e processamento assíncrono.
 - **Motivo:** uma URL temporária deixa de funcionar depois que a página é recarregada e não representa armazenamento real do arquivo.
 - **Consequência:** o preview funciona na sessão do upload; depois disso, a interface informa a limitação sem tentar abrir um endereço inválido.
 - **Evolução futura:** armazenamento privado deverá fornecer URLs assinadas de curta duração.
+
+## ADR-019 — A decisão documental conduz o próximo contato
+
+- **Decisão:** centralizar aprovação e recusa em `DocumentWorkflowService`, que atualiza o documento, a pessoa e a conversa relacionada.
+- **Motivo:** eliminar a procura manual do cliente após cada conferência e manter a próxima ação visível no canal de origem.
+- **Consequência:** uma aprovação solicita automaticamente o próximo requisito pendente; uma recusa registra o motivo e reabre o envio da mesma categoria.
+- **Limite atual:** o disparo é uma nova mensagem local na conversa mockada. Uma integração futura deverá publicar o evento em uma fila e usar um adaptador oficial do WhatsApp.
+
+## ADR-020 — Dashboard orientado a prioridades
+
+- **Decisão:** consolidar documentos em conferência, atendimentos aguardando equipe e pessoas com pendências em atalhos operacionais.
+- **Motivo:** oferecer uma entrada diária baseada no trabalho a realizar, e não apenas em métricas históricas.
+- **Consequência:** os números são derivados dos mesmos repositórios locais usados pelas telas de destino e permanecem consistentes durante a sessão.

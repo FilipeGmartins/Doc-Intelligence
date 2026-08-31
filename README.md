@@ -58,4 +58,9 @@ Na área de Pessoas, cada cadastro pode ser editado para definir documentos exig
 
 A automação demonstrativa de WhatsApp reutiliza o mesmo fluxo documental: cria um cadastro provisório, envia o arquivo para a Conferência e só marca o documento como recebido em Pessoas depois da aprovação humana. Nenhuma mensagem externa ou informação real é utilizada.
 
+O ciclo agora é completo: a conferência pode aprovar ou recusar com um motivo. A
+aprovação solicita automaticamente o próximo documento pendente e a recusa pede o
+reenvio da mesma categoria na conversa simulada. O Dashboard apresenta essas
+pendências como prioridades operacionais.
+
 Os previews de arquivos enviados existem somente durante a sessão atual. Após recarregar, os metadados, resultados e eventos continuam disponíveis, mas o binário não é persistido.

@@ -61,6 +61,13 @@ estado de processamento.
 
 Aprova um documento processado ou revisado. Retorna `200` com `status: approved`.
 
+### `POST /documents/:id/reject`
+
+Recusa um documento processado ou revisado. Recebe um `reason` obrigatório,
+retorna `200` com `status: rejected` e publica o resultado para o fluxo de
+atendimento. Na implementação mockada, essa publicação atualiza a conversa local;
+em produção, deverá ser um evento assíncrono e idempotente.
+
 ## Erros
 
 ```json
@@ -110,3 +117,11 @@ fila de conferência com vínculo de cliente e categoria.
 Valida o pré-cadastro de forma idempotente. A aprovação do documento continua
 separada e é responsável por marcar o requisito como recebido. Uma implementação
 real receberia eventos por webhook da API oficial, fora do navegador.
+
+### Resultado da conferência
+
+Quando um documento vinculado é aprovado, o atendimento solicita a próxima
+categoria exigida ainda não recebida ou encerra a coleta. Quando é recusado, o
+motivo aparece na conversa e a mesma categoria volta a aceitar um envio. Esse
+comportamento pertence ao serviço de orquestração, deixando o adaptador do canal
+substituível por uma integração real no futuro.

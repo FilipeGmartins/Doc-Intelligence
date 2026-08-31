@@ -24,6 +24,9 @@
 - Contratos explícitos para substituição futura do processador e repositório mockados.
 - Teste de interface do envio vinculado ao cliente.
 - Documentação de arquitetura, decisões, API e uso de IA.
+- Recusa documental com motivo, status próprio e evento na trilha de auditoria.
+- Solicitação automática de reenvio ou do próximo documento pendente no WhatsApp simulado.
+- Central operacional no Dashboard com prioridades de documentos, atendimentos e pessoas.
 
 ### Decidido
 
@@ -42,3 +45,4 @@
 - Metadados e idioma da página alinhados à identidade DOC Intelligence.
 - URLs temporárias de preview mantidas apenas durante a sessão do envio.
 - Mensagem explícita quando o binário não está mais disponível após recarregar.
+- Orquestração das decisões de conferência em um serviço de fluxo separado, preservando os contratos de integração futura.

@@ -86,12 +86,15 @@ da pessoa e do documento na conversa.
 
 ```text
 novo contato -> pessoa provisória -> documento processado -> conferência humana
-  -> documento aprovado -> requisito recebido em Pessoas
+  -> aprovação -> requisito recebido -> próximo documento solicitado
+  -> recusa -> motivo registrado -> reenvio da mesma categoria solicitado
 ```
 
-`DocumentService.approve()` chama `PersonService.markDocumentReceived()`. Assim,
-a aprovação documental é a única ação cotidiana necessária para atualizar a
-situação consolidada; a edição manual em Pessoas permanece apenas para exceções.
+`DocumentWorkflowService` coordena a decisão. Na aprovação,
+`DocumentService.approve()` chama `PersonService.markDocumentReceived()` e a
+conversa solicita o próximo requisito ainda ausente. Na recusa, o documento ganha
+um motivo auditável e a conversa volta à etapa de envio. Assim, Pessoas permanece
+como painel consolidado e ferramenta de exceção, não como etapa repetitiva.
 
 Em produção, webhooks da WhatsApp Business Cloud API alimentariam o contrato de
 conversa. Consentimento, autenticação, proteção de dados, auditoria e tratamento

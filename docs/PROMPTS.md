@@ -1161,3 +1161,12 @@ ja que ainda nao foi feito o comit una tanto a brach de automação de WhatsApp 
 faca os ajustes anteriores mais ainda nao prepare o build para deploy
 existe algum ponto em que voce sugere melhoria ?
 ```
+
+## Prompt 020 — Aplicar as melhorias sugeridas
+
+```text
+aplique as sugestoes que foram feitas
+```
+
+Decisão aplicada: fechar o ciclo entre conferência e WhatsApp, permitir recusa com
+motivo e reenvio, e transformar o Dashboard em uma central de prioridades.
