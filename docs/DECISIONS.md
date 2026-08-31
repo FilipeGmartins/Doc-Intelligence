@@ -178,3 +178,9 @@ real agora.
 
 **Trade-offs:** o contrato remoto ainda poderá precisar de paginação, timeout,
 autenticação e processamento assíncrono.
+## ADR-016 — Separar documento exigido de documento recebido
+
+- **Decisão:** a edição da pessoa usa duas marcações independentes por tipo documental: “Exigido” e “Recebido”.
+- **Motivo:** marcar apenas que um tipo existe não informa se ele é uma obrigação do cliente ou se o arquivo já chegou ao escritório.
+- **Consequência:** o status é recalculado automaticamente; qualquer item exigido e não recebido deixa a pessoa como `pending_document`.
+- **Limite atual:** a marcação de recebimento é uma simulação local e não representa um arquivo efetivamente armazenado.

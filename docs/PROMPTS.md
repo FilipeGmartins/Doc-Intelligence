@@ -1113,3 +1113,13 @@ inclua no codigo um espaco para poder enviar outros tipos de documento como cont
 seria interessante um checkbox e um espaco para envio assim especificando cliente por cliente, nem todos vao enviar as mesmas informacoes
 depois que concluirmos iremos nos concentrar na simulacao do whatsapp mas nao agora
 ```
+## Prompt 013 — Edição de pessoas e controle de recebimento
+
+```text
+agora que a pagina esta funcional na area de pessoas coloque a possibilidade de edicao na aba de pessoas
+coloque a possibilidade de colocar carteira de trabalho,cheques
+seria interessante colocar um checkbox pra simular qual documento foi adicionado
+qual opcao vc aacha melhor ?
+```
+
+Decisão aplicada: separar os checkboxes de documento exigido e documento recebido, recalculando automaticamente a situação documental da pessoa.

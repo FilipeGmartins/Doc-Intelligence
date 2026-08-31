@@ -53,3 +53,5 @@ npm test
 - [Carta de encerramento](docs/CARTA_ENCERRAMENTO_DOC_INTELLIGENCE.docx)
 
 Todos os dados funcionais usados no projeto serão fictícios.
+
+Na área de Pessoas, cada cadastro pode ser editado para definir documentos exigidos e simular quais já foram recebidos. O status documental é atualizado automaticamente.

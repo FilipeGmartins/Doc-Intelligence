@@ -30,3 +30,8 @@
 - Persistência local atrás de um repositório.
 - Threshold inicial de confiança em `0.80`.
 - Cenários de processamento reproduzíveis.
+- Edição de dados e requisitos documentais diretamente na área de Pessoas.
+- Checkboxes separados para documentos exigidos e documentos recebidos.
+- Inclusão de cheque bancário, além de carteira de trabalho e contracheque.
+- Recálculo automático de pendências após a edição do cliente.
+- Persistência simulada das pessoas atrás de uma interface de repositório.
