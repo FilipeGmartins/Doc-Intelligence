@@ -29,5 +29,8 @@ do fluxo implementado. Requisitos serão rastreados contra a Definition of Done.
   acesso restrito à rede. A execução foi interrompida e repetida com autorização.
 - Tailwind e bibliotecas de componentes foram adiados porque ainda não há telas que
   justifiquem essa complexidade.
+- A primeira compilação da automação falhou porque foram usadas propriedades de
+  parâmetro incompatíveis com `erasableSyntaxOnly`. As propriedades foram
+  declaradas explicitamente e o build voltou a passar.
 
 Este documento será atualizado durante o desenvolvimento.

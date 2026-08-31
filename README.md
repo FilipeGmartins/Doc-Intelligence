@@ -12,6 +12,10 @@ documentos. A aplicação também oferece tema claro/escuro e uma visão consoli
 da situação documental das pessoas cadastradas. A persistência local fica isolada
 atrás do contrato de repositório.
 
+Uma automação demonstrativa de WhatsApp permite simular coleta guiada de dados,
+recebimento de documento, pré-cadastro, validação interna e conversão em pessoa.
+Nenhuma mensagem externa ou dado pessoal real é utilizado.
+
 ## Requisitos
 
 - Node.js 20 ou superior

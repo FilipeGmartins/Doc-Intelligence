@@ -18,6 +18,8 @@
 - Tema escuro persistente, com preferência inicial baseada no sistema operacional.
 - Visão de pessoas com busca, filtros e indicadores de conformidade documental.
 - Refinamentos de identidade na navegação, títulos e superfícies da aplicação.
+- Atendimento mockado por WhatsApp com conversa guiada e progresso da coleta.
+- Pré-cadastro persistente, validação interna e conversão idempotente em pessoa.
 - Documentação de arquitetura, decisões, API e uso de IA.
 
 ### Decidido

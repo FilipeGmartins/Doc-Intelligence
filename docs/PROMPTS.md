@@ -1102,3 +1102,9 @@ existiria uma especie de automacao onde o cliente poderia ir falando por whatsap
 e a partir do botao whatsapp que teria no sistema mostraria as pessoas que criaram o primeiro contato por cadastro e estao esperando a parte interna da empresa validar e finalizar as informacoes
 acha que isso é possivel e se possivel como poderia implementar e simular (de forma mockada) essa ideia
 ```
+
+## Prompt 012 — Implementação do experimento em nova branch
+
+```text
+crie uma nova brench e implemente essas sugestoes que foram feitas para podermos confirmar se a ideia poderia ser funcional ou nao
+```

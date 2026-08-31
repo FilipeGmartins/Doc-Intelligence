@@ -6,6 +6,7 @@ import { ReviewQueuePage } from '../pages/ReviewQueue/ReviewQueuePage'
 import { DocumentDetailsPage } from '../pages/DocumentDetails/DocumentDetailsPage'
 import { DocumentsPage } from '../pages/Documents/DocumentsPage'
 import { PeoplePage } from '../pages/People/PeoplePage'
+import { WhatsAppPage } from '../pages/WhatsApp/WhatsAppPage'
 
 export function AppRouter() {
   return (
@@ -18,6 +19,7 @@ export function AppRouter() {
           <Route path="documents" element={<DocumentsPage />} />
           <Route path="documents/:id" element={<DocumentDetailsPage />} />
           <Route path="people" element={<PeoplePage />} />
+          <Route path="whatsapp" element={<WhatsAppPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

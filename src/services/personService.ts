@@ -1,21 +1,44 @@
-import { mockPeople } from '../mocks/mockPeople'
-import type { PersonListFilters, PersonRecord } from '../types/person'
+import { MockPersonRepository } from '../repositories/MockPersonRepository'
+import type { PersonRepository } from '../repositories/PersonRepository'
+import type { CreatePersonFromIntakeInput, PersonListFilters, PersonRecord } from '../types/person'
 
 export interface PersonServiceContract {
   list(filters?: PersonListFilters): Promise<PersonRecord[]>
+  createFromIntake(input: CreatePersonFromIntakeInput): Promise<PersonRecord>
+  resetDemo(): Promise<PersonRecord[]>
 }
 
 export class PersonService implements PersonServiceContract {
-  async list(filters: PersonListFilters = {}): Promise<PersonRecord[]> {
-    const query = filters.query?.trim().toLocaleLowerCase('pt-BR')
+  private readonly repository: PersonRepository
 
-    return structuredClone(mockPeople).filter((person) => {
-      if (filters.status && person.documentStatus !== filters.status) return false
-      if (!query) return true
+  constructor(repository: PersonRepository = new MockPersonRepository()) {
+    this.repository = repository
+  }
 
-      return [person.name, person.email, person.identifier]
-        .some((value) => value.toLocaleLowerCase('pt-BR').includes(query))
+  list(filters: PersonListFilters = {}): Promise<PersonRecord[]> {
+    return this.repository.findAll(filters)
+  }
+
+  async createFromIntake(input: CreatePersonFromIntakeInput): Promise<PersonRecord> {
+    const existing = await this.repository.findBySourceReference(input.sourceReference)
+    if (existing) return existing
+
+    return this.repository.create({
+      id: `person-whatsapp-${input.sourceReference}`,
+      name: input.name,
+      identifier: input.identifier,
+      email: input.email,
+      documentStatus: 'pending_document',
+      documentCount: input.documentCount,
+      missingDocuments: ['Comprovante de residência'],
+      updatedAt: new Date().toISOString(),
+      source: 'whatsapp',
+      sourceReference: input.sourceReference,
     })
+  }
+
+  resetDemo(): Promise<PersonRecord[]> {
+    return this.repository.reset()
   }
 }
 

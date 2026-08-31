@@ -83,3 +83,23 @@ Aceita `query` e `status` como filtros opcionais. O status documental pode ser
 resumidos, quantidade de documentos, pendências e data da última atualização.
 
 Detalhe e edição de pessoas não fazem parte desta fatia.
+
+## Atendimentos de WhatsApp
+
+### `GET /intake-conversations`
+
+Lista conversas, progresso da coleta, mensagens e estado do pré-cadastro.
+
+### `POST /intake-conversations/:id/replies`
+
+Registra uma resposta simulada e avança a coleta guiada.
+
+### `POST /intake-conversations/:id/documents/mock`
+
+Simula o recebimento de um documento e move o atendimento para
+`awaiting_internal_review`.
+
+### `POST /intake-conversations/:id/approve`
+
+Valida o pré-cadastro e cria uma pessoa de forma idempotente. Uma implementação
+real receberia eventos por webhook da API oficial, fora do navegador.

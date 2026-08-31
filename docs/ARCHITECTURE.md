@@ -47,6 +47,31 @@ O tema é estado de interface compartilhado por `ThemeProvider`. A preferência 
 o único dado visual persistido diretamente no navegador, pois não representa dado
 de negócio e deve permanecer específico do dispositivo.
 
+## Automação demonstrativa de atendimento
+
+O fluxo de WhatsApp não se conecta a um canal externo. Ele simula um webhook e um
+bot guiado por estados determinísticos:
+
+```text
+WhatsAppPage
+  -> ConversationService
+  -> ConversationRepository
+  -> MockConversationRepository
+  -> MockConversationDatabase / localStorage
+```
+
+Após a coleta, `ConversationService.approve()` chama `PersonService` com a
+referência do atendimento. Essa referência funciona como chave idempotente para
+evitar cadastros duplicados.
+
+```text
+novo contato -> coleta -> validação interna -> pessoa criada
+```
+
+Em produção, webhooks da WhatsApp Business Cloud API alimentariam o contrato de
+conversa. Consentimento, autenticação, proteção de dados, auditoria e tratamento
+de reentregas seriam obrigatórios antes de receber dados pessoais reais.
+
 ## Substituição futura
 
 Uma integração real implementará `DocumentRepository` e será selecionada no ponto

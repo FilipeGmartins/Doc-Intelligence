@@ -128,3 +128,17 @@ CRM ou cadastro completo.
 
 **Trade-offs:** vínculos pessoa-documento ainda são demonstrativos e não podem ser
 editados nesta versão.
+
+## ADR-012 — WhatsApp como automação simulada por estados
+
+**Decisão:** representar o atendimento por uma máquina de estados determinística,
+com mensagens, coleta progressiva, documento fictício e validação humana.
+
+**Alternativas:** integrar a API real do WhatsApp ou usar um chatbot com IA.
+
+**Motivo:** validar a experiência e os limites arquiteturais sem credenciais,
+custos, dependências externas ou tratamento de dados pessoais reais.
+
+**Trade-offs:** linguagem livre, webhooks, reentregas, consentimento e falhas do
+canal não são reproduzidos. A demonstração comprova o fluxo de produto, não uma
+integração pronta para produção.
