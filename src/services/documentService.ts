@@ -11,6 +11,7 @@ import type {
   UpdateDocumentInput,
 } from '../types/document'
 import { getStatusFromConfidence } from '../utils/confidence'
+import { isCompleteCpf, isCpfField, isRgField, isValidRg, sanitizeCpf, sanitizeRg } from '../utils/personalIdentifiers'
 import type { AIProcessor } from './AIProcessor'
 import { MockAIService } from './mockAIService'
 import { PersonService, personService } from './personService'
@@ -52,6 +53,15 @@ function markEditedFields(
       manuallyEdited: nextField.manuallyEdited || Boolean(current && current.value !== nextField.value),
     }
   })
+}
+
+function normalizeIdentifierFields(fields: ExtractedField[]): ExtractedField[] {
+  const normalized = fields.map((field) => isCpfField(field.key, field.label)
+    ? { ...field, value: sanitizeCpf(field.value) }
+    : isRgField(field.key, field.label) ? { ...field, value: sanitizeRg(field.value) } : field)
+  if (normalized.some((field) => isCpfField(field.key, field.label) && !isCompleteCpf(field.value))) throw new Error('INVALID_CPF')
+  if (normalized.some((field) => isRgField(field.key, field.label) && !isValidRg(field.value))) throw new Error('INVALID_RG')
+  return normalized
 }
 
 export class DocumentService implements DocumentServiceContract {
@@ -129,7 +139,7 @@ export class DocumentService implements DocumentServiceContract {
   async update(id: string, changes: UpdateDocumentInput): Promise<DocumentRecord> {
     const current = await this.getById(id)
     const extractedFields = changes.extractedFields
-      ? markEditedFields(current.extractedFields, changes.extractedFields)
+      ? markEditedFields(current.extractedFields, normalizeIdentifierFields(changes.extractedFields))
       : undefined
 
     const manuallyEdited = Boolean(extractedFields?.some((field) => field.manuallyEdited && !current.extractedFields.find((item) => item.id === field.id)?.manuallyEdited))

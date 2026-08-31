@@ -32,7 +32,7 @@ describe('ConversationService', () => {
 
   it('avança a coleta guiada até aguardar o documento', async () => {
     const id = 'intake-maria-demo'
-    expect((await conversations.reply(id, 'CPF •••.555.•••-00')).currentStep).toBe('email')
+    expect((await conversations.reply(id, '55500000000')).currentStep).toBe('email')
     expect((await conversations.reply(id, 'maria@exemplo.test')).currentStep).toBe('address')
     const address = await conversations.reply(id, 'Rua Fictícia, 100 · Natal/RN')
 
@@ -47,12 +47,17 @@ describe('ConversationService', () => {
     expect((await people.list({ query: 'Maria Oliveira' }))[0].source).toBe('whatsapp')
   })
 
+  it('não avança a conversa com CPF incompleto', async () => {
+    await expect(conversations.reply('intake-maria-demo', 'abc12345')).rejects.toThrow('INVALID_CPF')
+    expect((await conversations.list()).find((item) => item.id === 'intake-maria-demo')?.currentStep).toBe('identifier')
+  })
+
   it('transforma um pré-cadastro validado em pessoa sem duplicidade', async () => {
     const approved = await conversations.approve('intake-gabriel-review')
     const approvedAgain = await people.createFromIntake({
       sourceReference: 'intake-gabriel-review',
       name: 'Gabriel Martins',
-      identifier: 'CPF •••.321.•••-09',
+      identifier: '32100000009',
       email: 'gabriel.martins@exemplo.test',
       documentCount: 1,
     })

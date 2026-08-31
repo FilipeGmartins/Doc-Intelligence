@@ -11,6 +11,10 @@ describe('PeoplePage', () => {
     const user = userEvent.setup()
 
     await user.click(await screen.findByRole('button', { name: 'Editar cadastro de Roberto Alves Nascimento' }))
+    const cpfInput = screen.getByLabelText(/CPF/)
+    await user.clear(cpfInput)
+    await user.type(cpfInput, 'abc1234567890199')
+    expect(cpfInput).toHaveValue('12345678901')
     const requiredCheck = screen.getByRole('checkbox', { name: 'Exigir Cheque' })
     const receivedCheck = screen.getByRole('checkbox', { name: 'Marcar Cheque como recebido' })
 

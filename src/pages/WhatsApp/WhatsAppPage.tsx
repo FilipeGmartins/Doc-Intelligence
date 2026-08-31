@@ -5,12 +5,13 @@ import { ConversationStatusBadge } from '../../components/conversations/Conversa
 import { useConversations } from '../../hooks/useConversations'
 import type { IntakeStep } from '../../types/conversation'
 import { DOCUMENT_CATEGORY_OPTIONS } from '../../types/document'
+import { CPF_LENGTH, isCompleteCpf, sanitizeCpf } from '../../utils/personalIdentifiers'
 
 const timeFormatter = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' })
 
 const placeholderByStep: Record<IntakeStep, string> = {
   name: 'Digite um nome fictício...',
-  identifier: 'Ex.: CPF •••.123.•••-00',
+  identifier: 'Digite os 11 números do CPF',
   email: 'Ex.: pessoa@exemplo.test',
   address: 'Digite um endereço fictício...',
   document: 'Envie o documento pelo botão ao lado',
@@ -40,6 +41,7 @@ export function WhatsAppPage() {
     approved: conversations.filter((item) => item.status === 'approved').length,
   }
   const requestedDocumentLabel = DOCUMENT_CATEGORY_OPTIONS.find((option) => option.value === selected?.requestedCategory)?.label ?? 'documento solicitado'
+  const cpfIncomplete = selected?.currentStep === 'identifier' && !isCompleteCpf(message)
 
   const execute = async (operation: () => Promise<unknown>, success: string) => {
     setBusy(true)
@@ -58,6 +60,10 @@ export function WhatsAppPage() {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
     if (!selected || !message.trim()) return
+    if (selected.currentStep === 'identifier' && !isCompleteCpf(message)) {
+      setFeedback('O CPF deve conter exatamente 11 números.')
+      return
+    }
     void execute(() => reply(selected.id, message), 'Resposta registrada e pré-cadastro atualizado.')
   }
 
@@ -98,8 +104,9 @@ export function WhatsAppPage() {
             ))}</div>
             <form className="chat-composer" onSubmit={handleSubmit}>
               <label className="sr-only" htmlFor="mock-message">Resposta fictícia do cliente</label>
-              <input id="mock-message" value={message} onChange={(event) => setMessage(event.target.value)} placeholder={selected.currentStep === 'document' ? `Enviar ${requestedDocumentLabel.toLocaleLowerCase('pt-BR')}` : placeholderByStep[selected.currentStep]} disabled={busy || ['document', 'complete'].includes(selected.currentStep)} />
-              {selected.currentStep === 'document' ? <button className="attach-button" type="button" disabled={busy} onClick={() => void execute(() => attachMockDocument(selected.id), `${requestedDocumentLabel} fictício recebido e enviado à conferência.`)}><FileUp size={17} />Simular documento</button> : <button className="send-button" type="submit" disabled={busy || !message.trim() || selected.currentStep === 'complete'} aria-label="Enviar resposta simulada"><Send size={17} /></button>}
+              <input id="mock-message" value={message} inputMode={selected.currentStep === 'identifier' ? 'numeric' : undefined} maxLength={selected.currentStep === 'identifier' ? CPF_LENGTH : undefined} pattern={selected.currentStep === 'identifier' ? '[0-9]{11}' : undefined} aria-describedby={selected.currentStep === 'identifier' ? 'whatsapp-cpf-hint' : undefined} aria-invalid={selected.currentStep === 'identifier' && message.length > 0 && cpfIncomplete} onChange={(event) => setMessage(selected.currentStep === 'identifier' ? sanitizeCpf(event.target.value) : event.target.value)} placeholder={selected.currentStep === 'document' ? `Enviar ${requestedDocumentLabel.toLocaleLowerCase('pt-BR')}` : placeholderByStep[selected.currentStep]} disabled={busy || ['document', 'complete'].includes(selected.currentStep)} />
+              {selected.currentStep === 'identifier' ? <small id="whatsapp-cpf-hint" className={message.length > 0 && cpfIncomplete ? 'composer-identifier-hint composer-identifier-hint--error' : 'composer-identifier-hint'}>{message.length}/{CPF_LENGTH}</small> : null}
+              {selected.currentStep === 'document' ? <button className="attach-button" type="button" disabled={busy} onClick={() => void execute(() => attachMockDocument(selected.id), `${requestedDocumentLabel} fictício recebido e enviado à conferência.`)}><FileUp size={17} />Simular documento</button> : <button className="send-button" type="submit" disabled={busy || !message.trim() || cpfIncomplete || selected.currentStep === 'complete'} aria-label="Enviar resposta simulada"><Send size={17} /></button>}
             </form>
           </section>
 

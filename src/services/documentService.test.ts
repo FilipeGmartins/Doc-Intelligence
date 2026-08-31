@@ -29,12 +29,32 @@ describe('DocumentService', () => {
   it('marca um campo alterado como corrigido manualmente', async () => {
     const document = await service.getById('doc-identidade-ficticia')
     const editedFields = document.extractedFields.map((field) =>
-      field.key === 'cpf' ? { ...field, value: '000.111.222-44' } : field,
+      field.key === 'cpf' ? { ...field, value: '00011122244' } : field,
     )
 
     const updated = await service.update(document.id, { extractedFields: editedFields })
     expect(updated.extractedFields.find((field) => field.key === 'cpf')?.manuallyEdited).toBe(true)
     expect(updated.events.at(-1)?.type).toBe('manually_edited')
+  })
+
+  it('normaliza CPF e limita RG durante a correção humana', async () => {
+    const document = await service.getById('doc-identidade-ficticia')
+    const updated = await service.update(document.id, {
+      extractedFields: [
+        ...document.extractedFields.map((field) => field.key === 'cpf' ? { ...field, value: 'abc000.111.222-33xyz' } : field),
+        { id: 'field-rg', key: 'rg', label: 'RG', value: '12.345.678-x99', confidence: 0.8, manuallyEdited: false },
+      ],
+    })
+
+    expect(updated.extractedFields.find((field) => field.key === 'cpf')?.value).toBe('00011122233')
+    expect(updated.extractedFields.find((field) => field.key === 'rg')?.value).toBe('12345678X')
+  })
+
+  it('recusa a persistência de CPF incompleto', async () => {
+    const document = await service.getById('doc-identidade-ficticia')
+    await expect(service.update(document.id, {
+      extractedFields: document.extractedFields.map((field) => field.key === 'cpf' ? { ...field, value: '12345' } : field),
+    })).rejects.toThrow('INVALID_CPF')
   })
 
   it('registra falha e permite tentar novamente', async () => {

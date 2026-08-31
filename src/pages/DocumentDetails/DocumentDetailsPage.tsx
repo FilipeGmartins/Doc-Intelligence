@@ -7,6 +7,7 @@ import { personService } from '../../services/personService'
 import { documentWorkflowService } from '../../services/documentWorkflowService'
 import { DOCUMENT_CATEGORY_OPTIONS, type DocumentCategory, type DocumentRecord, type ExtractedField } from '../../types/document'
 import type { PersonRecord } from '../../types/person'
+import { CPF_LENGTH, RG_MAX_LENGTH, isCompleteCpf, isCpfField, isRgField, isValidRg, sanitizeCpf, sanitizeRg } from '../../utils/personalIdentifiers'
 
 const eventDateFormatter = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
 
@@ -27,7 +28,7 @@ export function DocumentDetailsPage() {
 
   useEffect(() => {
     let active = true
-    void Promise.all([documentService.getById(id), personService.list()]).then(([result, personList]) => { if (active) { setDocument(result); setFields(result.extractedFields); setPeople(personList); setPersonId(result.personId ?? ''); setCategory(result.expectedCategory ?? 'other'); setLoading(false) } }, () => { if (active) { setError('Documento não encontrado.'); setLoading(false) } })
+    void Promise.all([documentService.getById(id), personService.list()]).then(([result, personList]) => { if (active) { setDocument(result); setFields(result.extractedFields.map((field) => isCpfField(field.key, field.label) ? { ...field, value: sanitizeCpf(field.value) } : isRgField(field.key, field.label) ? { ...field, value: sanitizeRg(field.value) } : field)); setPeople(personList); setPersonId(result.personId ?? ''); setCategory(result.expectedCategory ?? 'other'); setLoading(false) } }, () => { if (active) { setError('Documento não encontrado.'); setLoading(false) } })
     return () => { active = false }
   }, [id])
 
@@ -35,6 +36,7 @@ export function DocumentDetailsPage() {
   const linkedPerson = people.find((person) => person.id === personId)
   const categoryLabel = DOCUMENT_CATEGORY_OPTIONS.find((option) => option.value === category)?.label ?? 'Documento'
   const finalized = ['approved', 'rejected'].includes(document?.status ?? '')
+  const invalidIdentifiers = fields.some((field) => isCpfField(field.key, field.label) ? !isCompleteCpf(field.value) : isRgField(field.key, field.label) ? !isValidRg(field.value) : false)
 
   const save = async () => {
     if (!document) return
@@ -81,9 +83,14 @@ export function DocumentDetailsPage() {
           <div className="review-linkage"><label><span>Cliente vinculado</span><select disabled={finalized} value={personId} onChange={(event) => setPersonId(event.target.value)}><option value="">Sem vínculo</option>{people.map((person) => <option key={person.id} value={person.id}>{person.name}</option>)}</select></label><label><span>Categoria documental</span><select disabled={finalized} value={category} onChange={(event) => setCategory(event.target.value as DocumentCategory)}>{DOCUMENT_CATEGORY_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label></div>
           {linkedPerson && <div className={`automation-impact ${finalized ? 'automation-impact--done' : ''}`}>{document.status === 'rejected' ? <XCircle size={17} /> : <Check size={17} />}<span><strong>{document.status === 'approved' ? 'Cadastro atualizado automaticamente' : document.status === 'rejected' ? 'Reenvio solicitado automaticamente' : 'Automação após a decisão'}</strong>{document.status === 'approved' ? `${categoryLabel} foi marcado como recebido para ${linkedPerson.name}.` : document.status === 'rejected' ? `O WhatsApp solicitou um novo ${categoryLabel.toLocaleLowerCase('pt-BR')} para ${linkedPerson.name}.` : `A aprovação marcará o documento como recebido; a recusa solicitará um novo envio.`}</span></div>}
           {!finalized && <div className="provisional-banner"><AlertTriangle size={17} /><span><strong>Dados provisórios</strong>Confira todos os campos antes de finalizar.</span></div>}
-          <div className="field-list">{fields.map((field) => <label className={`extracted-field ${field.confidence < .8 ? 'extracted-field--warning' : ''}`} key={field.id}><span><strong>{field.label}</strong><small>Confiança: {Math.round(field.confidence * 100)}% {field.confidence < .8 ? '· Revisar' : ''}</small></span><input disabled={finalized} value={field.value} onChange={(event) => setFields((current) => current.map((item) => item.id === field.id ? { ...item, value: event.target.value } : item))} />{(field.manuallyEdited || field.value !== document.extractedFields.find(({ id }) => id === field.id)?.value) && <em>Corrigido manualmente</em>}</label>)}</div>
+          <div className="field-list">{fields.map((field) => {
+            const cpfField = isCpfField(field.key, field.label)
+            const rgField = isRgField(field.key, field.label)
+            const identifierError = cpfField && !isCompleteCpf(field.value) ? 'CPF deve conter exatamente 11 números.' : rgField && !isValidRg(field.value) ? 'RG deve conter no máximo 9 caracteres.' : null
+            return <label className={`extracted-field ${field.confidence < .8 || identifierError ? 'extracted-field--warning' : ''}`} key={field.id}><span><strong>{field.label}{cpfField ? ` · ${field.value.length}/${CPF_LENGTH}` : rgField ? ` · ${field.value.length}/${RG_MAX_LENGTH}` : ''}</strong><small>{identifierError ?? `Confiança: ${Math.round(field.confidence * 100)}% ${field.confidence < .8 ? '· Revisar' : ''}`}</small></span><input disabled={finalized} inputMode={cpfField ? 'numeric' : undefined} maxLength={cpfField ? CPF_LENGTH : rgField ? RG_MAX_LENGTH : undefined} pattern={cpfField ? '[0-9]{11}' : rgField ? '[0-9A-Za-z]{1,9}' : undefined} aria-invalid={Boolean(identifierError)} value={field.value} onChange={(event) => setFields((current) => current.map((item) => item.id === field.id ? { ...item, value: cpfField ? sanitizeCpf(event.target.value) : rgField ? sanitizeRg(event.target.value) : event.target.value } : item))} />{(field.manuallyEdited || field.value !== document.extractedFields.find(({ id }) => id === field.id)?.value) && <em>Corrigido manualmente</em>}</label>
+          })}</div>
           {showRejection && !finalized && <div className="rejection-form"><label><span>Motivo da recusa</span><textarea autoFocus value={rejectionReason} onChange={(event) => setRejectionReason(event.target.value)} placeholder="Ex.: imagem cortada ou dados ilegíveis" /></label><div><button className="secondary-button" type="button" onClick={() => setShowRejection(false)}>Cancelar</button><button className="danger-button" type="button" disabled={!rejectionReason.trim() || saving} onClick={() => void reject()}><XCircle size={16} />Confirmar e solicitar reenvio</button></div></div>}
-          {!finalized && <div className="form-actions"><button className="secondary-button action-save" type="button" disabled={!dirty || saving} onClick={() => void save()}><Save size={17} />{saving ? 'Salvando...' : 'Salvar alterações'}</button><button className="reject-button" type="button" disabled={dirty || saving} onClick={() => setShowRejection(true)}><XCircle size={17} />Recusar e solicitar novo</button><button className="primary-button primary-button--button" type="button" disabled={dirty || saving} title={dirty ? 'Salve as alterações antes de decidir' : undefined} onClick={() => void approve()}><Check size={18} />Aprovar documento</button></div>}
+          {!finalized && <div className="form-actions"><button className="secondary-button action-save" type="button" disabled={!dirty || saving || invalidIdentifiers} onClick={() => void save()}><Save size={17} />{saving ? 'Salvando...' : 'Salvar alterações'}</button><button className="reject-button" type="button" disabled={dirty || saving} onClick={() => setShowRejection(true)}><XCircle size={17} />Recusar e solicitar novo</button><button className="primary-button primary-button--button" type="button" disabled={dirty || saving || invalidIdentifiers} title={dirty ? 'Salve as alterações antes de decidir' : invalidIdentifiers ? 'Corrija CPF e RG antes de aprovar' : undefined} onClick={() => void approve()}><Check size={18} />Aprovar documento</button></div>}
         </section>
       </div>
       <section className="panel audit-panel">

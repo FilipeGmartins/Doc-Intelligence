@@ -6,6 +6,7 @@ import { usePeople } from '../../hooks/usePeople'
 import { documentService } from '../../services/documentService'
 import { DOCUMENT_CATEGORY_OPTIONS, type DocumentCategory, type DocumentRecord } from '../../types/document'
 import { formatFileSize, validateDocumentFiles } from '../../utils/documentFiles'
+import { CPF_LENGTH, isCompleteCpf, sanitizeCpf } from '../../utils/personalIdentifiers'
 
 interface UploadError {
   id: string
@@ -59,6 +60,10 @@ export function UploadPage() {
 
   const createClient = async (event: FormEvent) => {
     event.preventDefault()
+    if (!isCompleteCpf(clientDraft.identifier)) {
+      setClientError('O CPF deve conter exatamente 11 números.')
+      return
+    }
     setCreatingClient(true)
     setClientError('')
     try {
@@ -72,7 +77,7 @@ export function UploadPage() {
       setClientSuccess(`${created.name} foi criado e selecionado para este envio.`)
       closeClientForm()
     } catch (error) {
-      setClientError(error instanceof Error && error.message === 'PERSON_ALREADY_EXISTS' ? 'Já existe um cliente com esta identificação ou e-mail.' : 'Preencha nome, identificação e e-mail para criar o cliente.')
+      setClientError(error instanceof Error && error.message === 'PERSON_ALREADY_EXISTS' ? 'Já existe um cliente com este CPF ou e-mail.' : error instanceof Error && error.message === 'INVALID_CPF' ? 'O CPF deve conter exatamente 11 números.' : 'Preencha nome, CPF e e-mail para criar o cliente.')
     } finally {
       setCreatingClient(false)
     }
@@ -145,10 +150,10 @@ export function UploadPage() {
       {showClientForm ? <section className="quick-client-panel panel" aria-labelledby="quick-client-title">
         <div className="quick-client-heading"><div><span className="quick-client-icon"><UserPlus size={20} /></span><span><h2 id="quick-client-title">Novo cliente</h2><p>Cadastro manual e fictício para continuar o envio sem sair desta tela.</p></span></div><button type="button" aria-label="Fechar cadastro de cliente" onClick={closeClientForm}><X size={18} /></button></div>
         <form onSubmit={(event) => void createClient(event)}>
-          <div className="quick-client-fields"><label><span>Nome completo</span><input autoFocus required value={clientDraft.name} onChange={(event) => setClientDraft((current) => ({ ...current, name: event.target.value }))} placeholder="Ex.: Cliente Demonstração" /></label><label><span>CPF ou identificação fictícia</span><input required value={clientDraft.identifier} onChange={(event) => setClientDraft((current) => ({ ...current, identifier: event.target.value }))} placeholder="Ex.: CPF •••.000.•••-00" /></label><label className="quick-client-field--wide"><span>E-mail</span><input required type="email" value={clientDraft.email} onChange={(event) => setClientDraft((current) => ({ ...current, email: event.target.value }))} placeholder="cliente@exemplo.test" /></label></div>
+          <div className="quick-client-fields"><label><span>Nome completo</span><input autoFocus required value={clientDraft.name} onChange={(event) => setClientDraft((current) => ({ ...current, name: event.target.value }))} placeholder="Ex.: Cliente Demonstração" /></label><label><span>CPF fictício <small>{clientDraft.identifier.length}/{CPF_LENGTH}</small></span><input required inputMode="numeric" maxLength={CPF_LENGTH} pattern="[0-9]{11}" aria-invalid={clientDraft.identifier.length > 0 && !isCompleteCpf(clientDraft.identifier)} value={clientDraft.identifier} onChange={(event) => setClientDraft((current) => ({ ...current, identifier: sanitizeCpf(event.target.value) }))} placeholder="Somente 11 números" />{clientDraft.identifier.length > 0 && !isCompleteCpf(clientDraft.identifier) ? <small className="identifier-input-error">Digite os 11 números do CPF.</small> : null}</label><label className="quick-client-field--wide"><span>E-mail</span><input required type="email" value={clientDraft.email} onChange={(event) => setClientDraft((current) => ({ ...current, email: event.target.value }))} placeholder="cliente@exemplo.test" /></label></div>
           <fieldset className="quick-client-requirements"><legend>Documentos inicialmente exigidos</legend><p>Você poderá ajustar essa lista agora ou posteriormente em Pessoas.</p><div>{DOCUMENT_CATEGORY_OPTIONS.map((option) => <label key={option.value}><input type="checkbox" checked={clientDraft.documentRequirements.includes(option.value)} onChange={() => toggleClientRequirement(option.value)} /><span className="custom-checkbox">{clientDraft.documentRequirements.includes(option.value) ? <Check size={14} /> : null}</span><span>{option.label}</span></label>)}</div></fieldset>
           {clientError ? <p className="quick-client-error" role="alert">{clientError}</p> : null}
-          <div className="quick-client-actions"><button className="secondary-button" type="button" onClick={closeClientForm}>Cancelar</button><button className="primary-button primary-button--button" type="submit" disabled={creatingClient}>{creatingClient ? <LoaderCircle className="spin" size={17} /> : <UserPlus size={17} />}{creatingClient ? 'Criando...' : 'Criar e selecionar'}</button></div>
+          <div className="quick-client-actions"><button className="secondary-button" type="button" onClick={closeClientForm}>Cancelar</button><button className="primary-button primary-button--button" type="submit" disabled={creatingClient || !isCompleteCpf(clientDraft.identifier)}>{creatingClient ? <LoaderCircle className="spin" size={17} /> : <UserPlus size={17} />}{creatingClient ? 'Criando...' : 'Criar e selecionar'}</button></div>
         </form>
       </section> : null}
 

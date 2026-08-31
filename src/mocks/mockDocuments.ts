@@ -12,7 +12,7 @@ export const mockDocuments: DocumentRecord[] = [
     confidence: 0.68,
     extractedFields: [
       { id: 'field-nome-joao', key: 'name', label: 'Nome', value: 'João Henrique Silva', confidence: 0.96, manuallyEdited: false },
-      { id: 'field-cpf-joao', key: 'cpf', label: 'CPF', value: '000.111.222-33', confidence: 0.61, manuallyEdited: false },
+      { id: 'field-cpf-joao', key: 'cpf', label: 'CPF', value: '00011122233', confidence: 0.61, manuallyEdited: false },
       { id: 'field-nascimento-joao', key: 'birthDate', label: 'Data de nascimento', value: '15/04/1994', confidence: 0.78, manuallyEdited: false },
     ],
     createdAt: '2026-08-30T13:15:00.000Z',

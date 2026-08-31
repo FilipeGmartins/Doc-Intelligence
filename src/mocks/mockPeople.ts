@@ -4,7 +4,7 @@ export const mockPeople: PersonRecord[] = [
   {
     id: 'person-ana-lima',
     name: 'Ana Paula Lima',
-    identifier: 'CPF •••.482.•••-10',
+    identifier: '48200000010',
     email: 'ana.lima@exemplo.test',
     documentStatus: 'complete',
     documentCount: 4,
@@ -16,7 +16,7 @@ export const mockPeople: PersonRecord[] = [
   {
     id: 'person-carlos-santos',
     name: 'Carlos Eduardo Santos',
-    identifier: 'CPF •••.175.•••-42',
+    identifier: '17500000042',
     email: 'carlos.santos@exemplo.test',
     documentStatus: 'pending_document',
     documentCount: 2,
@@ -28,7 +28,7 @@ export const mockPeople: PersonRecord[] = [
   {
     id: 'person-mariana-costa',
     name: 'Mariana Ferreira Costa',
-    identifier: 'CPF •••.603.•••-08',
+    identifier: '60300000008',
     email: 'mariana.costa@exemplo.test',
     documentStatus: 'update_required',
     documentCount: 4,
@@ -41,7 +41,7 @@ export const mockPeople: PersonRecord[] = [
   {
     id: 'person-roberto-alves',
     name: 'Roberto Alves Nascimento',
-    identifier: 'CPF •••.914.•••-65',
+    identifier: '91400000065',
     email: 'roberto.alves@exemplo.test',
     documentStatus: 'complete',
     documentCount: 5,
@@ -53,7 +53,7 @@ export const mockPeople: PersonRecord[] = [
   {
     id: 'person-juliana-rocha',
     name: 'Juliana Mendes Rocha',
-    identifier: 'CPF •••.247.•••-31',
+    identifier: '24700000031',
     email: 'juliana.rocha@exemplo.test',
     documentStatus: 'pending_document',
     documentCount: 3,
@@ -65,7 +65,7 @@ export const mockPeople: PersonRecord[] = [
   {
     id: 'person-lucas-barbosa',
     name: 'Lucas Henrique Barbosa',
-    identifier: 'CPF •••.730.•••-19',
+    identifier: '73000000019',
     email: 'lucas.barbosa@exemplo.test',
     documentStatus: 'update_required',
     documentCount: 3,

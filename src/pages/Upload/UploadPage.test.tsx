@@ -42,7 +42,9 @@ describe('UploadPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Novo cliente' }))
     await user.type(screen.getByLabelText('Nome completo'), 'Cliente Demonstração')
-    await user.type(screen.getByLabelText('CPF ou identificação fictícia'), 'CPF •••.888.•••-88')
+    const cpfInput = screen.getByLabelText(/CPF fictício/)
+    await user.type(cpfInput, 'abc8880000008899')
+    expect(cpfInput).toHaveValue('88800000088')
     await user.type(screen.getByLabelText('E-mail'), 'cliente.novo@exemplo.test')
     await user.click(screen.getByRole('button', { name: 'Criar e selecionar' }))
 

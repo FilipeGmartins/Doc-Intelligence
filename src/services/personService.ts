@@ -2,6 +2,7 @@ import { MockPersonRepository } from '../repositories/MockPersonRepository'
 import type { PersonRepository } from '../repositories/PersonRepository'
 import { DOCUMENT_CATEGORY_OPTIONS, type DocumentCategory } from '../types/document'
 import type { CreateManualPersonInput, CreatePersonFromIntakeInput, PersonListFilters, PersonRecord, UpdatePersonInput } from '../types/person'
+import { isCompleteCpf, sanitizeCpf } from '../utils/personalIdentifiers'
 
 export interface PersonServiceContract {
   list(filters?: PersonListFilters): Promise<PersonRecord[]>
@@ -27,10 +28,13 @@ export class PersonService implements PersonServiceContract {
     const current = (await this.repository.findAll()).find((person) => person.id === id)
     if (!current) throw new Error('PERSON_NOT_FOUND')
 
+    const identifier = sanitizeCpf(input.identifier)
+    if (!isCompleteCpf(identifier)) throw new Error('INVALID_CPF')
+
     return this.repository.update(id, this.recalculate({
       ...current,
       name: input.name.trim(),
-      identifier: input.identifier.trim(),
+      identifier,
       email: input.email.trim(),
       documentRequirements: [...new Set(input.documentRequirements)],
       receivedDocuments: [...new Set(input.receivedDocuments)],
@@ -43,10 +47,13 @@ export class PersonService implements PersonServiceContract {
     const existing = await this.repository.findBySourceReference(input.sourceReference)
     if (existing) return existing
 
+    const identifier = sanitizeCpf(input.identifier)
+    if (!isCompleteCpf(identifier)) throw new Error('INVALID_CPF')
+
     return this.repository.create(this.recalculate({
       id: `person-whatsapp-${input.sourceReference}`,
       name: input.name,
-      identifier: input.identifier,
+      identifier,
       email: input.email,
       documentStatus: 'pending_document',
       documentCount: input.documentCount,
@@ -61,9 +68,10 @@ export class PersonService implements PersonServiceContract {
 
   async createManual(input: CreateManualPersonInput): Promise<PersonRecord> {
     const name = input.name.trim()
-    const identifier = input.identifier.trim()
+    const identifier = sanitizeCpf(input.identifier)
     const email = input.email.trim()
-    if (!name || !identifier || !email) throw new Error('INVALID_PERSON')
+    if (!name || !email) throw new Error('INVALID_PERSON')
+    if (!isCompleteCpf(identifier)) throw new Error('INVALID_CPF')
 
     const normalizedIdentifier = identifier.toLocaleLowerCase('pt-BR')
     const normalizedEmail = email.toLocaleLowerCase('pt-BR')

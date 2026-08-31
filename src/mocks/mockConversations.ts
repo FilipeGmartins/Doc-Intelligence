@@ -27,7 +27,7 @@ export const mockConversations: IntakeConversation[] = [
     completion: 100,
     draft: {
       name: 'Gabriel Martins',
-      identifier: 'CPF •••.321.•••-09',
+      identifier: '32100000009',
       email: 'gabriel.martins@exemplo.test',
       address: 'Rua do Sol, 45 · Natal/RN',
       documents: ['identidade_gabriel_demo.pdf'],

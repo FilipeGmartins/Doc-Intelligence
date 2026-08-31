@@ -33,8 +33,8 @@ function createTemplate(category: DocumentCategory): AIProcessingResult {
       documentType: 'Documento de Identidade', suggestedFileName: 'IDENTIDADE_JOAO_HENRIQUE_SILVA.pdf', confidence: 0.91,
       extractedFields: [
         field('name', 'name', 'Nome', 'João Henrique Silva', 0.96), field('affiliation', 'affiliation', 'Filiação', 'Maria Silva e Carlos Silva', 0.88),
-        field('birthDate', 'birthDate', 'Data de nascimento', '15/04/1994', 0.93), field('documentNumber', 'documentNumber', 'Número do documento', '00.000.000-0', 0.89),
-        field('issuingAuthority', 'issuingAuthority', 'Órgão emissor', 'SSP/RN', 0.92), field('cpf', 'cpf', 'CPF', '000.111.222-33', 0.90),
+        field('birthDate', 'birthDate', 'Data de nascimento', '15/04/1994', 0.93), field('rg', 'rg', 'RG', '000000000', 0.89),
+        field('issuingAuthority', 'issuingAuthority', 'Órgão emissor', 'SSP/RN', 0.92), field('cpf', 'cpf', 'CPF', '00011122233', 0.90),
       ],
     },
     proof_of_residence: {

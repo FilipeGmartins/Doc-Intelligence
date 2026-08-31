@@ -4,6 +4,7 @@ import { PersonStatusBadge } from '../../components/people/PersonStatusBadge'
 import { usePeople } from '../../hooks/usePeople'
 import { DOCUMENT_CATEGORY_OPTIONS, type DocumentCategory } from '../../types/document'
 import type { PersonDocumentStatus, PersonRecord, UpdatePersonInput } from '../../types/person'
+import { CPF_LENGTH, isCompleteCpf, sanitizeCpf } from '../../utils/personalIdentifiers'
 
 const dateFormatter = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
 
@@ -60,6 +61,10 @@ export function PeoplePage() {
   async function savePerson(event: React.FormEvent) {
     event.preventDefault()
     if (!editingPerson || !editForm) return
+    if (!isCompleteCpf(editForm.identifier)) {
+      setSaveError('O CPF deve conter exatamente 11 números.')
+      return
+    }
     setSaving(true)
     setSaveError(null)
     try {
@@ -67,8 +72,8 @@ export function PeoplePage() {
       setEditingPerson(null)
       reload()
       reloadSummary()
-    } catch {
-      setSaveError('Não foi possível salvar as alterações.')
+    } catch (error) {
+      setSaveError(error instanceof Error && error.message === 'INVALID_CPF' ? 'O CPF deve conter exatamente 11 números.' : 'Não foi possível salvar as alterações.')
     } finally {
       setSaving(false)
     }
@@ -118,7 +123,7 @@ export function PeoplePage() {
 
             <div className="person-editor-fields">
               <label><span>Nome completo</span><input autoFocus required value={editForm.name} onChange={(event) => setEditForm({ ...editForm, name: event.target.value })} /></label>
-              <label><span>CPF ou identificador</span><input required value={editForm.identifier} onChange={(event) => setEditForm({ ...editForm, identifier: event.target.value })} /></label>
+              <label><span>CPF <small>{editForm.identifier.length}/{CPF_LENGTH}</small></span><input required inputMode="numeric" maxLength={CPF_LENGTH} pattern="[0-9]{11}" aria-invalid={!isCompleteCpf(editForm.identifier)} value={editForm.identifier} onChange={(event) => setEditForm({ ...editForm, identifier: sanitizeCpf(event.target.value) })} />{!isCompleteCpf(editForm.identifier) ? <small className="identifier-input-error">Digite os 11 números do CPF.</small> : null}</label>
               <label className="person-editor-field--wide"><span>E-mail</span><input type="email" required value={editForm.email} onChange={(event) => setEditForm({ ...editForm, email: event.target.value })} /></label>
             </div>
 
@@ -137,7 +142,7 @@ export function PeoplePage() {
 
             <label className="person-update-reason"><span>Motivo de atualização <small>(opcional)</small></span><input value={editForm.updateReason ?? ''} onChange={(event) => setEditForm({ ...editForm, updateReason: event.target.value })} placeholder="Ex.: documento vencido" /></label>
             {saveError && <p className="person-editor-error" role="alert">{saveError}</p>}
-            <div className="person-editor-actions"><button type="button" className="secondary-button" onClick={() => setEditingPerson(null)}>Cancelar</button><button type="submit" className="primary-button" disabled={saving}><Save size={16} />{saving ? 'Salvando…' : 'Salvar alterações'}</button></div>
+            <div className="person-editor-actions"><button type="button" className="secondary-button" onClick={() => setEditingPerson(null)}>Cancelar</button><button type="submit" className="primary-button" disabled={saving || !isCompleteCpf(editForm.identifier)}><Save size={16} />{saving ? 'Salvando…' : 'Salvar alterações'}</button></div>
           </form>
         </div>
       )}

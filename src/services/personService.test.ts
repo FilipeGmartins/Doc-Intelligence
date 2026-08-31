@@ -24,7 +24,7 @@ describe('PersonService', () => {
   it('recalcula pendências ao editar documentos exigidos e recebidos', async () => {
     const updated = await service.update('person-roberto-alves', {
       name: 'Roberto Alves Nascimento',
-      identifier: 'CPF •••.914.•••-65',
+      identifier: '91400000065',
       email: 'roberto.alves@exemplo.test',
       documentRequirements: ['identity', 'work_card', 'payslip', 'bank_check'],
       receivedDocuments: ['identity', 'work_card', 'payslip'],
@@ -36,7 +36,7 @@ describe('PersonService', () => {
   })
 
   it('cria uma pessoa provisória do WhatsApp sem duplicidade', async () => {
-    const input = { sourceReference: 'intake-01', name: 'Pessoa Teste', identifier: 'CPF •••.000.•••-00', email: 'teste@exemplo.test', documentCount: 0 }
+    const input = { sourceReference: 'intake-01', name: 'Pessoa Teste', identifier: '00000000000', email: 'teste@exemplo.test', documentCount: 0 }
     const first = await service.createFromIntake(input)
     const second = await service.createFromIntake(input)
 
@@ -55,7 +55,7 @@ describe('PersonService', () => {
   it('cria um cliente manual com requisitos próprios', async () => {
     const created = await service.createManual({
       name: 'Cliente Demonstração',
-      identifier: 'CPF •••.888.•••-88',
+      identifier: '88800000088',
       email: 'cliente.novo@exemplo.test',
       documentRequirements: ['identity', 'contract'],
     })
@@ -69,9 +69,18 @@ describe('PersonService', () => {
   it('impede duplicidade manual por identificação ou e-mail', async () => {
     await expect(service.createManual({
       name: 'Carlos duplicado',
-      identifier: 'CPF •••.175.•••-42',
+      identifier: '17500000042',
       email: 'outro@exemplo.test',
       documentRequirements: ['identity'],
     })).rejects.toThrow('PERSON_ALREADY_EXISTS')
+  })
+
+  it('exige exatamente 11 números no CPF', async () => {
+    await expect(service.createManual({
+      name: 'CPF incompleto',
+      identifier: 'abc12345',
+      email: 'cpf.incompleto@exemplo.test',
+      documentRequirements: ['identity'],
+    })).rejects.toThrow('INVALID_CPF')
   })
 })
