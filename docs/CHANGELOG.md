@@ -39,3 +39,6 @@
 - Criação automática de pessoa provisória e documento em revisão a partir da conversa.
 - Correção de cliente e categoria diretamente na conferência documental.
 - Aprovação documental atualizando automaticamente a situação da pessoa.
+- Metadados e idioma da página alinhados à identidade DOC Intelligence.
+- URLs temporárias de preview mantidas apenas durante a sessão do envio.
+- Mensagem explícita quando o binário não está mais disponível após recarregar.

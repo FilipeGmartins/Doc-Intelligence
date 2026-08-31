@@ -191,3 +191,10 @@ autenticação e processamento assíncrono.
 - **Motivo:** evitar que o operador repita manualmente em Pessoas uma informação já confirmada durante a revisão.
 - **Consequência:** Pessoas passa a ser um painel consolidado e uma ferramenta de exceção, não uma segunda etapa obrigatória do trabalho.
 - **Limite atual:** mensagens, arquivos, processamento e eventos continuam totalmente simulados em armazenamento local.
+
+## ADR-018 — Não persistir URLs temporárias de arquivos
+
+- **Decisão:** manter URLs `blob:` somente em memória durante a sessão e persistir apenas metadados e resultados documentais.
+- **Motivo:** uma URL temporária deixa de funcionar depois que a página é recarregada e não representa armazenamento real do arquivo.
+- **Consequência:** o preview funciona na sessão do upload; depois disso, a interface informa a limitação sem tentar abrir um endereço inválido.
+- **Evolução futura:** armazenamento privado deverá fornecer URLs assinadas de curta duração.

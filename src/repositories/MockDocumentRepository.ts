@@ -2,6 +2,12 @@ import type { DocumentRepository } from './DocumentRepository'
 import type { DocumentListFilters, DocumentRecord } from '../types/document'
 import { MockDatabase, mockDatabase } from '../mocks/mockDatabase'
 
+const sessionPreviewUrls = new Map<string, string>()
+
+function withSessionPreview(document: DocumentRecord): DocumentRecord {
+  return { ...document, previewUrl: sessionPreviewUrls.get(document.id) }
+}
+
 export class MockDocumentRepository implements DocumentRepository {
   private readonly database: MockDatabase
 
@@ -10,6 +16,9 @@ export class MockDocumentRepository implements DocumentRepository {
   }
 
   async createMany(documents: DocumentRecord[]): Promise<DocumentRecord[]> {
+    documents.forEach((document) => {
+      if (document.previewUrl) sessionPreviewUrls.set(document.id, document.previewUrl)
+    })
     const current = this.database.read()
     this.database.write([...documents, ...current])
     return structuredClone(documents)
@@ -17,7 +26,7 @@ export class MockDocumentRepository implements DocumentRepository {
 
   async findAll(filters: DocumentListFilters = {}): Promise<DocumentRecord[]> {
     const query = filters.query?.trim().toLocaleLowerCase('pt-BR')
-    return this.database.read().filter((document) => {
+    return this.database.read().map(withSessionPreview).filter((document) => {
       if (filters.status && document.status !== filters.status) return false
       if (!query) return true
 
@@ -27,7 +36,8 @@ export class MockDocumentRepository implements DocumentRepository {
   }
 
   async findById(id: string): Promise<DocumentRecord | null> {
-    return this.database.read().find((document) => document.id === id) ?? null
+    const document = this.database.read().find((item) => item.id === id)
+    return document ? withSessionPreview(document) : null
   }
 
   async update(id: string, changes: Partial<DocumentRecord>): Promise<DocumentRecord> {
@@ -35,13 +45,15 @@ export class MockDocumentRepository implements DocumentRepository {
     const index = documents.findIndex((document) => document.id === id)
     if (index < 0) throw new Error('DOCUMENT_NOT_FOUND')
 
-    const updated = { ...documents[index], ...structuredClone(changes), id }
+    if (changes.previewUrl) sessionPreviewUrls.set(id, changes.previewUrl)
+    const updated = { ...documents[index], ...structuredClone(changes), previewUrl: undefined, id }
     documents[index] = updated
     this.database.write(documents)
-    return structuredClone(updated)
+    return structuredClone(withSessionPreview(updated))
   }
 
   async reset(): Promise<DocumentRecord[]> {
+    sessionPreviewUrls.clear()
     return this.database.reset()
   }
 }

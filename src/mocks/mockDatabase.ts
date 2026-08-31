@@ -16,14 +16,14 @@ export class MockDatabase {
     try {
       const parsed: unknown = JSON.parse(stored)
       if (!Array.isArray(parsed)) throw new Error('Invalid mock database')
-      return (parsed as DocumentRecord[]).map((document) => ({ ...document, events: document.events ?? [] }))
+      return (parsed as DocumentRecord[]).map((document) => ({ ...document, previewUrl: undefined, events: document.events ?? [] }))
     } catch {
       return this.reset()
     }
   }
 
   write(documents: DocumentRecord[]): DocumentRecord[] {
-    const snapshot = cloneDocuments(documents)
+    const snapshot = cloneDocuments(documents).map((document) => ({ ...document, previewUrl: undefined }))
     localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot))
     return snapshot
   }

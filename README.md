@@ -57,3 +57,5 @@ Todos os dados funcionais usados no projeto serão fictícios.
 Na área de Pessoas, cada cadastro pode ser editado para definir documentos exigidos e simular quais já foram recebidos. O status documental é atualizado automaticamente.
 
 A automação demonstrativa de WhatsApp reutiliza o mesmo fluxo documental: cria um cadastro provisório, envia o arquivo para a Conferência e só marca o documento como recebido em Pessoas depois da aprovação humana. Nenhuma mensagem externa ou informação real é utilizada.
+
+Os previews de arquivos enviados existem somente durante a sessão atual. Após recarregar, os metadados, resultados e eventos continuam disponíveis, mas o binário não é persistido.

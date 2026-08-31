@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { MockDatabase } from '../mocks/mockDatabase'
+import { mockDocuments } from '../mocks/mockDocuments'
 import { MockDocumentRepository } from '../repositories/MockDocumentRepository'
 import { DocumentService } from './documentService'
 import { MockAIService } from './mockAIService'
@@ -88,5 +89,12 @@ describe('DocumentService', () => {
     const approved = await service.approve('doc-identidade-ficticia')
     expect(approved.events.at(-1)?.type).toBe('approved')
     expect(approved.events.at(-1)?.actor).toBe('Ana Souza')
+  })
+
+  it('não persiste URLs temporárias de preview entre sessões', () => {
+    const database = new MockDatabase()
+    database.write([{ ...mockDocuments[0], id: 'doc-preview-session', previewUrl: 'blob:http://localhost/temporario' }])
+
+    expect(database.read()[0].previewUrl).toBeUndefined()
   })
 })
