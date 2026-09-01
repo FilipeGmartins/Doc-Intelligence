@@ -35,5 +35,17 @@
   consulta do resultado, fila de conferência, campos editáveis, ações explícitas
   de aprovação/recusa, alternância de tema, viewport móvel de 390 x 844 e controle
   focável por teclado.
-- A inspeção dentro da URL protegida permanece condicionada à conclusão do 2FA da
-  conta Vercel; não houve tentativa de contornar essa proteção.
+- Após a conclusão do 2FA, a inspeção autenticada abriu a aplicação real na URL
+  protegida, sem redirecionamento para a tela de login.
+- As rotas `/`, `/upload`, `/documents`, `/review`, `/people` e `/whatsapp`
+  renderizaram o conteúdo funcional esperado quando acessadas diretamente na
+  sessão autenticada.
+- No ambiente online, a validação manual selecionou a cliente fictícia Ana Paula
+  Lima, enviou um PDF de demonstração, concluiu o processamento determinístico
+  com 91% de confiança e confirmou o novo registro na listagem de documentos.
+- A fila de conferência permaneceu disponível, a alternância entre os temas
+  claro e escuro funcionou e o console do navegador não apresentou erros ou
+  avisos durante o roteiro autenticado.
+- O smoke test anônimo continua bloqueado intencionalmente pela proteção da
+  Vercel; esse resultado não indica falha da aplicação e preserva o requisito de
+  não expor o sistema a navegadores anônimos.
