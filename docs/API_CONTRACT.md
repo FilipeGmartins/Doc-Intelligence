@@ -41,7 +41,7 @@ Exemplo de edição futura:
   "extractedFields": [
     {
       "id": "field-cpf-joao",
-      "value": "000.111.222-44",
+      "value": "86288366757",
       "manuallyEdited": true
     }
   ]

@@ -51,6 +51,7 @@ sobre os comportamentos centrais da fatia vertical.
 
 ## Documentação
 
+- [Especificação completa de requisitos e visão técnica](docs/PROJECT_REQUIREMENTS.md)
 - [Arquitetura](docs/ARCHITECTURE.md)
 - [Decisões](docs/DECISIONS.md)
 - [Contrato da API](docs/API_CONTRACT.md)
