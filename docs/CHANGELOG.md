@@ -4,6 +4,7 @@
 
 ### Adicionado
 
+- Estratégia de testes, registro final do uso de IA e tratamento explícito dos fatos do ambiente.
 - Fundação React, TypeScript e Vite.
 - React Router e Lucide React.
 - Vitest e Testing Library.

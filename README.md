@@ -39,6 +39,16 @@ npm run lint
 npm test
 ```
 
+### Estratégia de testes
+
+Os testes priorizam as regras com maior risco operacional: o limite de confiança
+que encaminha um resultado para conferência, a marcação de campos corrigidos, as
+transições de falha e reprocessamento, a validação de arquivos e identificadores e
+a migração dos dados locais. Esses pontos foram escolhidos porque uma regressão
+neles poderia aprovar dados incertos, perder rastreabilidade ou impedir a retomada
+da demonstração. A proposta não busca alta cobertura; busca evidência objetiva
+sobre os comportamentos centrais da fatia vertical.
+
 ## Documentação
 
 - [Arquitetura](docs/ARCHITECTURE.md)
