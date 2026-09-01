@@ -5,6 +5,11 @@
 **Estado do produto:** protótipo funcional front-end com API, banco, IA e WhatsApp simulados  
 **Público deste documento:** produto, engenharia, avaliação técnica, operação e futuras equipes de integração
 
+> **Nota de cronologia:** este é um documento consolidado do estado entregue, e
+> não uma reprodução da especificação inicial. A linha de base, as expansões de
+> escopo e as divergências estão registradas em
+> [Histórico da especificação e divergências](SPECIFICATION_HISTORY.md).
+
 ## 1. Resumo executivo
 
 O DOC Intelligence é uma aplicação interna concebida para reduzir o trabalho
