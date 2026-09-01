@@ -62,7 +62,7 @@ sobre os comportamentos centrais da fatia vertical.
 - [Guia de demonstração](docs/DEMO_GUIDE.md)
 - [Pontos de extensão](docs/INTEGRATION_ROADMAP.md)
 - [Registro de tempo](docs/TIME_LOG.md)
-- [Carta de encerramento](docs/CARTA_ENCERRAMENTO_DOC_INTELLIGENCE.docx)
+- [Carta de encerramento](docs/CARTA_ENCERRAMENTO_DOC_INTELLIGENCE.pdf)
 - [Checklist de implantação](docs/DEPLOY_CHECKLIST.md)
 
 Todos os dados funcionais usados no projeto serão fictícios.
