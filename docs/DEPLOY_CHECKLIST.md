@@ -20,3 +20,20 @@
 - `localStorage` não oferece persistência compartilhada, controle de acesso ou trilha imutável.
 - Arquivos não são enviados a armazenamento remoto; somente metadados simulados permanecem após recarregar.
 - A proteção real precisa ser configurada na plataforma de hospedagem ou em uma futura camada de autenticação/backend.
+
+## Resultado da validação em 1º de setembro de 2026
+
+- O GitHub registra o deployment de produção do commit `a8ecbcd` como concluído.
+- A URL específica da Vercel responde, mas redireciona visitantes não autenticados
+  para o login da plataforma porque a proteção do deployment está ativa.
+- O smoke test externo recebeu HTTP `200` em todas as rotas, porém marcou falha
+  corretamente porque o conteúdo retornado era a autenticação da Vercel, e não o
+  elemento `#root` da aplicação.
+- O mesmo build de produção foi servido localmente e passou no smoke test para
+  `/`, `/upload`, `/documents`, `/review`, `/people` e `/whatsapp`.
+- A validação manual confirmou seleção de cliente fictício, upload, processamento,
+  consulta do resultado, fila de conferência, campos editáveis, ações explícitas
+  de aprovação/recusa, alternância de tema, viewport móvel de 390 x 844 e controle
+  focável por teclado.
+- A inspeção dentro da URL protegida permanece condicionada à conclusão do 2FA da
+  conta Vercel; não houve tentativa de contornar essa proteção.

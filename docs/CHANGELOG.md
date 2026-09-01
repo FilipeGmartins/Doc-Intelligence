@@ -6,6 +6,9 @@
 
 - Estratégia de testes, registro final do uso de IA e tratamento explícito dos fatos do ambiente.
 - Especificação consolidada de requisitos, regras, arquitetura, limitações e roadmap técnico.
+- Registro explícito da linha de base, da evolução e das divergências da especificação.
+- Carta de encerramento revisada e gerador reproduzível do PDF final em Roboto.
+- Evidências do smoke test, da validação manual e do bloqueio esperado pela proteção da Vercel.
 - Fundação React, TypeScript e Vite.
 - React Router e Lucide React.
 - Vitest e Testing Library.
