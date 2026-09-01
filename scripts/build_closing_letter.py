@@ -101,7 +101,7 @@ def build_document():
 
     metadata = document.add_paragraph()
     metadata.paragraph_format.space_after = Pt(12)
-    metadata_run = metadata.add_run("Escopo: Front-end com API, banco e IA simulados  |  Agosto de 2026")
+    metadata_run = metadata.add_run("Escopo: Front-end com API, banco e IA simulados  |  Setembro de 2026")
     set_font(metadata_run, size=9, color=MUTED)
 
     lead = document.add_paragraph()
@@ -140,7 +140,7 @@ def build_document():
 
     document.core_properties.title = "Carta de encerramento - DOC Intelligence"
     document.core_properties.subject = "Desafio técnico - Trilha B"
-    document.core_properties.author = "DOC Intelligence"
+    document.core_properties.author = "Filipe Gomes Martins"
     document.save(OUTPUT)
 
 
