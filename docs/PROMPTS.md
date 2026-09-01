@@ -1205,3 +1205,13 @@ Decisão aplicada: validar os dígitos do CPF, mascarar apenas a apresentação,
 migrar dados locais antigos, oferecer recuperação para falhas inesperadas e
 configurar o fallback de rotas da SPA na Vercel. A proteção real permanece uma
 configuração da plataforma de hospedagem.
+
+## Prompt 025 — Publicar requisitos na documentação
+
+```text
+coloque o documento de requisitos na parte de documentacao no git hub
+```
+
+Decisão aplicada: disponibilizar a especificação consolidada em Markdown dentro
+de `docs/`, vinculá-la pelo README e manter o PDF como anexo separado do histórico
+Git.
